@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fcamara.minhaVaga.dto.request.UserDtoRequest;
-import com.fcamara.minhaVaga.dto.request.UserDtoUpdateRequest;
+import com.fcamara.minhaVaga.dto.request.UserDtoUpdateEmailRequest;
+import com.fcamara.minhaVaga.dto.request.UserDtoUpdatePasswordRequest;
 import com.fcamara.minhaVaga.dto.response.UserDtoResponse;
 import com.fcamara.minhaVaga.model.User;
 import com.fcamara.minhaVaga.service.UserService;
@@ -29,9 +30,9 @@ public class UsersController {
 	private UserService userService;
 	
 	@GetMapping("/{id}")
-	public UserDtoResponse findOneUser(@PathVariable Long id) {
+	public ResponseEntity<UserDtoResponse> findOneUser(@PathVariable Long id) {
 		User user = userService.findOneUser(id);
-		return new UserDtoResponse(user);
+		return ResponseEntity.ok(new UserDtoResponse(user));
 	};
 
 	@PostMapping("/register")
@@ -43,10 +44,17 @@ public class UsersController {
 		return ResponseEntity.created(uri).body(new UserDtoResponse(registeredUser));
 	}
 
-	@PutMapping("/update/{id}")
-	public ResponseEntity<UserDtoResponse> updateEmailOrPassword(@PathVariable Long id,
-			@Valid @RequestBody UserDtoUpdateRequest userRequest) {
-		User response = userService.updateEmailOrPassword(id, userRequest);
+	@PutMapping("/update-email/{id}")
+	public ResponseEntity<UserDtoResponse> updateEmail(@PathVariable Long id,
+			@Valid @RequestBody UserDtoUpdateEmailRequest email) {
+		User response = userService.updateEmail(id, email);
+		return ResponseEntity.ok(new UserDtoResponse(response));
+	}
+	
+	@PutMapping("/update-password/{id}")
+	public ResponseEntity<UserDtoResponse> updatePassword(@PathVariable Long id,
+			@Valid @RequestBody UserDtoUpdatePasswordRequest password) {
+		User response = userService.updatePassword(id, password);
 		return ResponseEntity.ok(new UserDtoResponse(response));
 	}
 }

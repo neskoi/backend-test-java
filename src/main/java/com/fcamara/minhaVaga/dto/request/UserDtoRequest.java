@@ -1,8 +1,8 @@
 package com.fcamara.minhaVaga.dto.request;
 
-import javax.persistence.Column;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.br.CPF;
@@ -25,11 +25,11 @@ public class UserDtoRequest {
 
 	@NotBlank(message = "É preciso informar um CPF")
 	@CPF(message = "CPF invalido.")
+	@Pattern(regexp = "[\\d]{11,11}", message = "O CPF deve conter apenas números")
 	private String cpf;
 
 	@NotBlank(message = "É preciso informar um email valido.")
 	@Email(message = "É preciso informar um email valido.")
-	@Column(unique = true)
 	private String email;
 
 	public User convertToUser() {

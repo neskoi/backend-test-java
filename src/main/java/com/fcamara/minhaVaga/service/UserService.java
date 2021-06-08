@@ -10,7 +10,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.fcamara.minhaVaga.dto.request.UserDtoUpdateRequest;
+import com.fcamara.minhaVaga.dto.request.UserDtoUpdateEmailRequest;
+import com.fcamara.minhaVaga.dto.request.UserDtoUpdatePasswordRequest;
 import com.fcamara.minhaVaga.exception.UserAlreadyExistsException;
 import com.fcamara.minhaVaga.model.User;
 import com.fcamara.minhaVaga.repository.UsersRepository;
@@ -32,18 +33,34 @@ public class UserService {
 	}
 
 	public User register(User user) {
-		toOnlyNumberCPF(user);
-		if (isCpfOrEmailAlreadyRegistered(user))
+		if (isCpfAlreadyRegistered(user.getCpf()) || isEmailAlreadyRegistered(user.getEmail()))
 			throw new UserAlreadyExistsException("Usuario já cadastrado.");
 		encodePassword(user);
 		return insertUser(user);
 	}
 
 	@Transactional
-	public User updateEmailOrPassword(Long id, UserDtoUpdateRequest userRequest) {
+	public User updateEmail(Long id, UserDtoUpdateEmailRequest email) {
 		Optional<User> checkUser = userRepository.findById(id);
-		if (checkUser.isPresent())
-			return userRequest.update(checkUser.get());
+		if (checkUser.isPresent()) {
+			User user = checkUser.get();
+			if (isEmailAlreadyRegistered(email.getEmail()))
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email indisponivel");
+			user.setEmail(email.getEmail());
+			return user;
+		}
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID invalido.");
+	}
+
+	@Transactional
+	public User updatePassword(Long id, UserDtoUpdatePasswordRequest password) {
+		Optional<User> checkUser = userRepository.findById(id);
+		if (checkUser.isPresent()) {
+			User user = checkUser.get();
+			user.setPassword(password.getPassword());
+			encodePassword(user);
+			return user;
+		}
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID invalido.");
 	}
 
@@ -51,15 +68,23 @@ public class UserService {
 		user.setPassword(bcrypt.encode(user.getPassword()));
 	}
 
-	private void toOnlyNumberCPF(User user) {
-		user.setCpf(user.getCpf().replaceAll("\\D", ""));
+	private boolean isEmailAlreadyRegistered(String email) {
+		try {
+			User emailRegistered = userRepository.findByEmail(email);
+			if (emailRegistered != null)
+				return true;
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Um erro inexperado ocorreu, tente novamente mais tarde.");
+		}
+		return false;
 	}
 
-	private boolean isCpfOrEmailAlreadyRegistered(User user) {
+	private boolean isCpfAlreadyRegistered(String cpf) {
 		try {
-			User cpfRegistered = userRepository.findByCpf(user.getCpf());
-			User emailRegistered = userRepository.findByEmail(user.getEmail());
-			if (cpfRegistered != null || emailRegistered != null)
+			User cpfRegistered = userRepository.findByCpf(cpf);
+			if (cpfRegistered != null)
 				return true;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());

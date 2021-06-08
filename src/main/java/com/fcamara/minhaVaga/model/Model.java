@@ -23,5 +23,5 @@ public class Model {
 	private Brand brand;
 	
 	@Enumerated(EnumType.STRING)
-	private Type type;
+	private TypeOfVehicle type;
 }

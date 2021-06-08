@@ -24,18 +24,20 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
+	@Column(nullable = false)
 	private String name;
-
+	
+	@Column(nullable = false)
 	private String password;
 
-	@Column(unique = true)
+	@Column(unique = true, nullable = false)
 	private String cpf;
 
-	@Column(unique = true)
+	@Column(unique = true, nullable = false)
 	private String email;
 
 	@OneToMany(mappedBy = "plate", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private Set<Vehicle> vehicles;
+	private Set<Vehicle> vehicle;
 
 	public User(String name, String password, String cpf, String email) {
 		this.name = name;

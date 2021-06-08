@@ -7,5 +7,8 @@ import com.fcamara.minhaVaga.model.CarPark;
 
 @Repository
 public interface CarParksRepository extends JpaRepository<CarPark, Long> {
+	
+	public CarPark findByCnpj(String cnpj);
+	public CarPark findByEmail(String email);
 
 }

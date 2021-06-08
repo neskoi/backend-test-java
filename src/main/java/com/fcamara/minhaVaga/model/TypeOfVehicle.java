@@ -1,6 +1,6 @@
 package com.fcamara.minhaVaga.model;
 
-public enum Type {
+public enum TypeOfVehicle {
 	CARRO,
 	MOTO
 }
