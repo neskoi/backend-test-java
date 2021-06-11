@@ -9,9 +9,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @Entity
 public class Vehicle {
 
@@ -19,28 +24,27 @@ public class Vehicle {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
-	@ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	@JoinColumn(name = "user_id", nullable = false)
+	@JsonIgnore
 	private User user;
 	
-	@Column(name = "user_id")
-	private Long UserId;
-	
-	@ManyToOne(targetEntity = Model.class, fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "model_id", nullable = false, insertable = false, updatable = false)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	@JoinColumn(name = "model_id", nullable = false)
 	private Model model;
-	
-	@Column(name = "model_id")
-	private Long modelId;
 
-	@ManyToOne(targetEntity = Color.class, fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "color_id", nullable = false, insertable = false, updatable = false)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	@JoinColumn(name = "color_id", nullable = false)
 	private Color color;
-	
-	@Column(name = "color_id")
-	private Long colorId;
-	
-	@Column(nullable = false)
+
+	@Column(nullable = false, unique = true)
 	private String plate;
+
+	public Vehicle(User user, Model model, Color color, String plate) {
+		this.user = user;
+		this.model = model;
+		this.color = color;
+		this.plate = plate;
+	}
 
 }

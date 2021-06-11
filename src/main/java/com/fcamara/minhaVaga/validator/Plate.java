@@ -15,7 +15,7 @@ import javax.validation.Payload;
 @Constraint(validatedBy = PlateValidator.class)
 public @interface Plate {
 	
-	String message() default "A placa precisa ser valida e estar no seguinte formato: AAA0000";
+	String message() default "A placa precisa ser valida e estar em um dos seguintes formatos: AAA0000 ou AAA0A00";
 
 	Class<?>[] groups() default {};
 

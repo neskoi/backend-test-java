@@ -8,7 +8,7 @@ public class PlateValidator implements ConstraintValidator<Plate, String> {
 	@Override
 	public boolean isValid(String plate, ConstraintValidatorContext arg1) {
 		if (plate != null)
-			if (plate.matches("[A-Z]{3}\\d{4}") && plate.length() == 7)
+			if ((plate.matches("[A-Z]{3}\\d{4}") || plate.matches("[A-Z]{3}\\d{1}[A-Z]{1}\\d{2}")) && plate.length() == 7)
 				return true;
 		return false;
 	}

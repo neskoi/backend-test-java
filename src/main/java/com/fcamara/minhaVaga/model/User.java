@@ -1,5 +1,6 @@
 package com.fcamara.minhaVaga.model;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -8,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -36,8 +39,8 @@ public class User {
 	@Column(unique = true, nullable = false)
 	private String email;
 
-	@OneToMany(mappedBy = "plate", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private Set<Vehicle> vehicle;
+	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private List<Vehicle> vehicle;
 
 	public User(String name, String password, String cpf, String email) {
 		this.name = name;

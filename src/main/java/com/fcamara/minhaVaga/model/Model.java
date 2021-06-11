@@ -21,7 +21,7 @@ public class Model {
 	
 	private String model;
 	
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	private Brand brand;
 	
 	@Enumerated(EnumType.STRING)

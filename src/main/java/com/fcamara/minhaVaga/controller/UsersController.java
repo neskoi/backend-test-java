@@ -51,10 +51,11 @@ public class UsersController {
 	}
 
 	@PostMapping("{userId}/register-vehicle")
-	public ResponseEntity<UserDtoResponse> registerVehicle(@PathVariable Long userId,@Valid @RequestBody VehicleDtoRequest vehicleRequest,
+	public ResponseEntity<Vehicle> registerVehicle(@PathVariable Long userId,@Valid @RequestBody VehicleDtoRequest vehicleRequest,
 			UriComponentsBuilder uriBuilder){
 		Vehicle registeredVehicle = vehicleService.registerVehicle(userId, vehicleRequest);
-		return null;
+		URI uri = uriBuilder.path("user/vehicle/{id}").buildAndExpand(registeredVehicle.getId()).toUri();
+		return ResponseEntity.created(uri).body(registeredVehicle);
 	}
 	
 	@PutMapping("/update-email/{id}")
