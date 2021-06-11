@@ -18,9 +18,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.fcamara.minhaVaga.dto.request.UserDtoRequest;
 import com.fcamara.minhaVaga.dto.request.UserDtoUpdateEmailRequest;
 import com.fcamara.minhaVaga.dto.request.UserDtoUpdatePasswordRequest;
+import com.fcamara.minhaVaga.dto.request.VehicleDtoRequest;
 import com.fcamara.minhaVaga.dto.response.UserDtoResponse;
 import com.fcamara.minhaVaga.model.User;
+import com.fcamara.minhaVaga.model.Vehicle;
 import com.fcamara.minhaVaga.service.UserService;
+import com.fcamara.minhaVaga.service.VehicleService;
 
 @RestController
 @RequestMapping("/user")
@@ -28,6 +31,9 @@ public class UsersController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private VehicleService vehicleService;
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<UserDtoResponse> findOneUser(@PathVariable Long id) {
@@ -44,6 +50,13 @@ public class UsersController {
 		return ResponseEntity.created(uri).body(new UserDtoResponse(registeredUser));
 	}
 
+	@PostMapping("{userId}/register-vehicle")
+	public ResponseEntity<UserDtoResponse> registerVehicle(@PathVariable Long userId,@Valid @RequestBody VehicleDtoRequest vehicleRequest,
+			UriComponentsBuilder uriBuilder){
+		Vehicle registeredVehicle = vehicleService.registerVehicle(userId, vehicleRequest);
+		return null;
+	}
+	
 	@PutMapping("/update-email/{id}")
 	public ResponseEntity<UserDtoResponse> updateEmail(@PathVariable Long id,
 			@Valid @RequestBody UserDtoUpdateEmailRequest email) {

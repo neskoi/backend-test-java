@@ -18,5 +18,4 @@ public class Brand {
 	
 		@Column(nullable = false)
 		private String brand;
-		
 }

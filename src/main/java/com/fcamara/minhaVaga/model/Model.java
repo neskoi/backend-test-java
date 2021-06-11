@@ -17,11 +17,13 @@ public class Model {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	
 	private String model;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private Brand brand;
 	
 	@Enumerated(EnumType.STRING)
-	private TypeOfVehicle type;
+	private TypeOfVehicle typeOfVehicle;
 }

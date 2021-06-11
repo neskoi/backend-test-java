@@ -11,11 +11,10 @@ import lombok.Data;
 @Data
 @Entity
 public class Color {
-	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column(nullable = false)
-	private String Color;
+	@Column(nullable = false, unique = true)
+	private String color;
 }

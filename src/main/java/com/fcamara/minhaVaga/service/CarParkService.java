@@ -11,11 +11,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.fcamara.minhaVaga.dto.request.CarParkAdressDtoRequest;
 import com.fcamara.minhaVaga.dto.request.CarParkDtoEmailRequest;
 import com.fcamara.minhaVaga.dto.request.CarParkDtoPasswordRequest;
 import com.fcamara.minhaVaga.dto.request.CarParkDtoPhoneRequest;
+import com.fcamara.minhaVaga.dto.request.VacancyDtoRequest;
 import com.fcamara.minhaVaga.exception.UserAlreadyExistsException;
+import com.fcamara.minhaVaga.model.Adress;
 import com.fcamara.minhaVaga.model.CarPark;
+import com.fcamara.minhaVaga.model.Vacancy;
+import com.fcamara.minhaVaga.repository.CarParkAdressRespository;
+import com.fcamara.minhaVaga.repository.CarParkAdressVacancyRespository;
 import com.fcamara.minhaVaga.repository.CarParksRepository;
 
 @Service
@@ -23,6 +29,12 @@ public class CarParkService {
 
 	@Autowired
 	CarParksRepository carParkRepository;
+
+	@Autowired
+	CarParkAdressRespository carParkAdressRepository;
+	
+	@Autowired
+	CarParkAdressVacancyRespository carParkAdressVacancyRepository;
 
 	@Autowired
 	PasswordEncoder bcrypt;
@@ -40,7 +52,40 @@ public class CarParkService {
 		encodePassword(carPark);
 		return carParkRepository.save(carPark);
 	}
-	
+
+	@Transactional
+	public CarPark registerAdress(Long id, CarParkAdressDtoRequest carParkAdressRequest) {
+		CarPark carPark = findOneCarPark(id);
+		Adress carParkAdressToRegister = carParkAdressRequest.convertToAdress(carPark);
+		carPark.getAdress().add(carParkAdressToRegister);
+		return carPark;
+	}
+
+	@Transactional
+	public Adress registerAdressVacancy(Long idAdress, VacancyDtoRequest vacancyRequest) {
+		Optional<Adress> searchedAdress = carParkAdressRepository.findById(idAdress);
+		if(searchedAdress.isPresent()) {
+			Vacancy vacancyInfo = vacancyRequest.convertToVacancy();
+			Adress adress = searchedAdress.get();
+			vacancyInfo.setAdress(adress);
+			adress.getVacancy().add(vacancyInfo);
+			return adress;
+		}
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID invalido.");
+	}
+
+	@Transactional
+	public Vacancy updateAdressVacancy(Long idVacancy, @Valid VacancyDtoRequest vacancyRequest) {
+		Optional<Vacancy> searchedVacancy = carParkAdressVacancyRepository.findById(idVacancy);
+		if(searchedVacancy.isPresent()) {
+			Vacancy vacancyInfo = vacancyRequest.convertToVacancy();
+			Vacancy vacancyToModify = searchedVacancy.get();
+			vacancyToModify.update(vacancyInfo);
+			return vacancyToModify;
+		}
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID invalido.");
+	}
+
 	@Transactional
 	public CarPark updateEmail(Long id, @Valid CarParkDtoEmailRequest carParkRequest) {
 		Optional<CarPark> searchedCarPark = carParkRepository.findById(id);
@@ -53,11 +98,11 @@ public class CarParkService {
 		}
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID invalido.");
 	}
-	
+
 	@Transactional
 	public CarPark updatePassword(Long id, @Valid CarParkDtoPasswordRequest carParkRequest) {
 		Optional<CarPark> searchedCarPark = carParkRepository.findById(id);
-		if(searchedCarPark.isPresent()) {
+		if (searchedCarPark.isPresent()) {
 			CarPark carPark = searchedCarPark.get();
 			carPark.setPassword(carParkRequest.getPassword());
 			encodePassword(carPark);
@@ -69,16 +114,31 @@ public class CarParkService {
 	@Transactional
 	public CarPark updatePhone(Long id, @Valid CarParkDtoPhoneRequest carParkRequest) {
 		Optional<CarPark> searchedCarPark = carParkRepository.findById(id);
-		if(searchedCarPark.isPresent()) {
+		if (searchedCarPark.isPresent()) {
 			CarPark carPark = searchedCarPark.get();
 			carPark.setPhone(carParkRequest.getPhone());
 			return carPark;
 		}
-			
+
 		return null;
 	}
 
-
+	public void deleteAdress(Long id) {
+		Optional<Adress> searchedAdress = carParkAdressRepository.findById(id);
+		if(searchedAdress.isEmpty())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID invalido.");
+		Adress adressToDelete = searchedAdress.get();
+		carParkAdressRepository.delete(adressToDelete);
+	}
+	
+	public void deleteAdressVacancy(Long id) {
+		Optional<Vacancy> searchedVacancy = carParkAdressVacancyRepository.findById(id);
+		if(searchedVacancy.isEmpty())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID invalido.");
+		Vacancy vacancyToDelete = searchedVacancy.get();
+		carParkAdressVacancyRepository.deleteById(vacancyToDelete.getId());
+	}
+	
 	private void encodePassword(CarPark carPark) {
 		carPark.setPassword(bcrypt.encode(carPark.getPassword()));
 	}
@@ -109,9 +169,5 @@ public class CarParkService {
 		}
 		return false;
 	}
-
-	
-	
-	
 
 }
