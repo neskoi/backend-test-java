@@ -2,7 +2,10 @@ package com.fcamara.minhaVaga.service;
 
 import java.util.Optional;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,11 +39,11 @@ public class VehicleService {
 
 	public Vehicle findOneVehicle(Long id) {
 		Optional<Vehicle> searchedVehicle = vehicleRepository.findById(id);
-		if(searchedVehicle.isEmpty())
+		if (searchedVehicle.isEmpty())
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id invalido.");
 		return searchedVehicle.get();
 	}
-	
+
 	public Vehicle registerVehicle(Long userId, @Valid VehicleDtoRequest vehicleRequest) {
 		Optional<Vehicle> searchedVehicle = vehicleRepository.findByPlate(vehicleRequest.getPlate());
 		if (searchedVehicle.isPresent())
@@ -62,6 +65,17 @@ public class VehicleService {
 
 	}
 
-	
+	@Transactional
+	public Vehicle changeVehicleColor(Long vehicleId, Long colorId) {
+		Optional<Vehicle> searchedVehicle = vehicleRepository.findById(vehicleId);
+		if (searchedVehicle.isEmpty())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id invalido.");
+		Optional<Color> searchedColor = colorRepository.findById(colorId);
+		if (searchedColor.isEmpty())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cor invalida.");
+		Vehicle vehicle = searchedVehicle.get();
+		vehicle.setColor(searchedColor.get());
+		return vehicle;
+	}
 
 }
