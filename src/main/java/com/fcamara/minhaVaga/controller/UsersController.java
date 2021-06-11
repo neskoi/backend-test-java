@@ -31,16 +31,23 @@ public class UsersController {
 
 	@Autowired
 	private UserService userService;
-	
+
 	@Autowired
 	private VehicleService vehicleService;
-	
+
 	@GetMapping("/{id}")
 	public ResponseEntity<UserDtoResponse> findOneUser(@PathVariable Long id) {
 		User user = userService.findOneUser(id);
 		return ResponseEntity.ok(new UserDtoResponse(user));
 	};
 
+	//Acredito que essa rota seja desnecessaria.
+	@GetMapping("/vehicle/{id}")
+	public ResponseEntity<Vehicle> findOneVehicle(@PathVariable Long id){
+		Vehicle vehicle = vehicleService.findOneVehicle(id);
+		return ResponseEntity.ok(vehicle);
+	}
+	
 	@PostMapping("/register")
 	public ResponseEntity<UserDtoResponse> register(@Valid @RequestBody UserDtoRequest userRequest,
 			UriComponentsBuilder uriBuilder) {
@@ -51,24 +58,28 @@ public class UsersController {
 	}
 
 	@PostMapping("{userId}/register-vehicle")
-	public ResponseEntity<Vehicle> registerVehicle(@PathVariable Long userId,@Valid @RequestBody VehicleDtoRequest vehicleRequest,
-			UriComponentsBuilder uriBuilder){
+	public ResponseEntity<Vehicle> registerVehicle(@PathVariable Long userId,
+			@Valid @RequestBody VehicleDtoRequest vehicleRequest, UriComponentsBuilder uriBuilder) {
 		Vehicle registeredVehicle = vehicleService.registerVehicle(userId, vehicleRequest);
 		URI uri = uriBuilder.path("user/vehicle/{id}").buildAndExpand(registeredVehicle.getId()).toUri();
 		return ResponseEntity.created(uri).body(registeredVehicle);
 	}
-	
+
 	@PutMapping("/update-email/{id}")
 	public ResponseEntity<UserDtoResponse> updateEmail(@PathVariable Long id,
 			@Valid @RequestBody UserDtoUpdateEmailRequest email) {
 		User response = userService.updateEmail(id, email);
 		return ResponseEntity.ok(new UserDtoResponse(response));
 	}
-	
+
 	@PutMapping("/update-password/{id}")
 	public ResponseEntity<UserDtoResponse> updatePassword(@PathVariable Long id,
 			@Valid @RequestBody UserDtoUpdatePasswordRequest password) {
 		User response = userService.updatePassword(id, password);
 		return ResponseEntity.ok(new UserDtoResponse(response));
+	}
+
+	public ResponseEntity<?> updateVehicleColor(){
+		return null;
 	}
 }

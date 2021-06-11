@@ -34,12 +34,19 @@ public class VehicleService {
 	@Autowired
 	ModelRepository modelRepository;
 
+	public Vehicle findOneVehicle(Long id) {
+		Optional<Vehicle> searchedVehicle = vehicleRepository.findById(id);
+		if(searchedVehicle.isEmpty())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id invalido.");
+		return searchedVehicle.get();
+	}
+	
 	public Vehicle registerVehicle(Long userId, @Valid VehicleDtoRequest vehicleRequest) {
 		Optional<Vehicle> searchedVehicle = vehicleRepository.findByPlate(vehicleRequest.getPlate());
 		if (searchedVehicle.isPresent())
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Placa já registrada.");
 		Optional<User> searchedUser = userRepository.findById(userId);
-		if (searchedUser.isPresent())
+		if (searchedUser.isEmpty())
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id invalido.");
 		Optional<Color> searchedColor = colorRepository.findById(vehicleRequest.getColorId());
 		Optional<Model> searchedModel = modelRepository.findById(vehicleRequest.getModelId());
@@ -54,5 +61,7 @@ public class VehicleService {
 		return vehicleRepository.save(vehicleToRegister);
 
 	}
+
+	
 
 }
