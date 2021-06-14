@@ -40,6 +40,10 @@ public class CarParkUsageService {
 		// Talvez fosse interessante adicionar um observer
 		// para que o estacionamento fosse notificado com a entrada de cada usuario,
 		// assim poderia atualizar o limite de vagas no client side
+		//Como reduzir essa função?
+		Optional<CarParkUsage> searchedCarParkUsage = carParkUsageRepository.findByVehicleIdAndExitTimeIsNull(vehicleId);
+		if (searchedCarParkUsage.isPresent())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Veiculo já estacionado.");
 		Vacancy vacancy = findVacancyById(vacancyId);
 		Vehicle vehicle = findVehicleById(vehicleId);
 		if (vacancy.getTypeOfVehicle() == vehicle.getModel().getTypeOfVehicle()) {
@@ -62,8 +66,8 @@ public class CarParkUsageService {
 		carParkUsage.exit();
 		return carParkUsage;
 	}
-
-	private CarParkUsage createCarParkUsage(Vacancy vacancy, Vehicle vehicle, TypeOfPayment typeOfPayment) {
+	
+ 	private CarParkUsage createCarParkUsage(Vacancy vacancy, Vehicle vehicle, TypeOfPayment typeOfPayment) {
 		return new CarParkUsage(vacancy, vehicle, typeOfPayment);
 	}
 
