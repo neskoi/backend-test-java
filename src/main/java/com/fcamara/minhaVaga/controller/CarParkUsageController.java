@@ -1,21 +1,35 @@
 package com.fcamara.minhaVaga.controller;
 
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@RequestMapping("/vaga")
-public class CarParkUsageController {
+import com.fcamara.minhaVaga.dto.request.CarParkUsageDtoRequest;
+import com.fcamara.minhaVaga.model.CarParkUsage;
+import com.fcamara.minhaVaga.service.CarParkUsageService;
 
-	@PostMapping("/estacionar/{park}/{vehicle}")
-	public String parking(@PathVariable(value = "park") int park_id, @PathVariable(value = "vehicle") int vehicle_id) {
-		return "Estacionou no estacionamento: " + park_id + " o carro " + vehicle_id;
+@RestController
+@RequestMapping("/carpark-vacancy/{vacancyId}/vehicle/{vehicleId}")
+public class CarParkUsageController {
+	
+	@Autowired
+	CarParkUsageService carParkUsageService;
+
+	@PostMapping("/parking")
+	public ResponseEntity<CarParkUsage> parking(@PathVariable Long vacancyId, @PathVariable Long vehicleId, @Valid @RequestBody CarParkUsageDtoRequest typeOfPayment) {
+		CarParkUsage carParkUsage = carParkUsageService.insert(vacancyId, vehicleId, typeOfPayment.getTypeOfPayment());
+		return ResponseEntity.ok(carParkUsage);
 	}
 	
-	@PostMapping("/partir/{park}/{vehicle}")
-	public String leave(@PathVariable(value = "park") int park_id, @PathVariable(value = "vehicle") int vehicle_id) {
-		return "Saiu do estacionamento: " + park_id + " o carro " + vehicle_id;
-	}
+	@PostMapping("/leave")
+	public ResponseEntity<?> leave(@PathVariable Long vacancyId, @PathVariable Long vehicleId) {
+		return null;
+	}  
 }

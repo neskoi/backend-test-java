@@ -4,8 +4,6 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -76,6 +74,14 @@ public class VehicleService {
 		Vehicle vehicle = searchedVehicle.get();
 		vehicle.setColor(searchedColor.get());
 		return vehicle;
+	}
+
+	
+	public void deleteVehicle(Long vehicleId) {
+		Optional<Vehicle> searchedVehicle = vehicleRepository.findById(vehicleId);
+		if(searchedVehicle.isEmpty())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id invalido.");
+		vehicleRepository.deleteById(vehicleId);
 	}
 
 }

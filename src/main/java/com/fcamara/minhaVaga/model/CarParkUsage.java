@@ -6,6 +6,8 @@ import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,27 +15,40 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @Entity
 public class CarParkUsage {
 	
+	public CarParkUsage(Timestamp entranceTime, Vacancy vacancy, Vehicle vehicle, TypeOfPayment typeOfPayment) {
+		this.entraceTime = entranceTime;
+		this.vacancy = vacancy;
+		this.vehicle = vehicle;
+		this.typeOfPayment = typeOfPayment;
+		this.paidPrice = vacancy.getHourPrice();
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	private User user;
+	private Vehicle vehicle;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	private CarPark carpark;
+	private Vacancy vacancy;
 	
 	@Column(nullable = false)
-	private Timestamp entraceTimestamp;
+	private Timestamp entraceTime;
 	
 	@Column
-	private Timestamp exitTimestamp;
+	private Timestamp exitTime;
+	
+	@Enumerated(EnumType.STRING)
+	private TypeOfPayment typeOfPayment;
 	
 	@Column
-	private BigDecimal pricePaidPerHour;
+	private BigDecimal paidPrice;
 }	

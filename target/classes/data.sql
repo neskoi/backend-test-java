@@ -33,6 +33,8 @@ VALUES('1', '25', '5.0', '20.0', '120.0', 'MOTO');
 INSERT INTO vacancy(adress_id, amount, hour_price, day_price, month_price, type_of_vehicle) 
 VALUES('1', '50', '6.0', '25.0', '150.0', 'CARRO');
 INSERT INTO vacancy(adress_id, amount, hour_price, day_price, month_price, type_of_vehicle) 
+VALUES('1', '1', '500', '1000', '2000', 'CARRO');
+INSERT INTO vacancy(adress_id, amount, hour_price, day_price, month_price, type_of_vehicle) 
 VALUES('1', '50', '6.0', '25.0', '150.0', 'CARRO');
 INSERT INTO vacancy(adress_id, amount, hour_price, day_price, month_price, type_of_vehicle) 
 VALUES('3', '35', '8.0', '40.0', '200.0', 'CARRO');
@@ -85,4 +87,15 @@ INSERT INTO color(color)
 VALUES('Roxo');
 INSERT INTO color(color) 
 VALUES('Laranja');
+/*===========================================================*/
+INSERT INTO vehicle(plate, color_id, model_id, user_id) 
+VALUES('AAA0000', '1', '1', '1');
+INSERT INTO vehicle(plate, color_id, model_id, user_id) 
+VALUES('BBB0000', '2', '2', '2');
+INSERT INTO vehicle(plate, color_id, model_id, user_id) 
+VALUES('CCC0000', '3', '3', '3');
+INSERT INTO vehicle(plate, color_id, model_id, user_id) 
+VALUES('DDD0000', '4', '4', '4');
+INSERT INTO vehicle(plate, color_id, model_id, user_id) 
+VALUES('EEE0000', '5', '5', '4');
 /*===========================================================*/
