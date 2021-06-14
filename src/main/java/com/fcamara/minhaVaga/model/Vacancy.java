@@ -59,4 +59,20 @@ public class Vacancy {
 		this.monthPrice = vacancyInfo.getMonthPrice();
 	}
 
+	//Isso gera um acoplamento não muito intressante. como desfazer?
+	public BigDecimal getPrice(TypeOfPayment typeOfPayment) {
+		switch (typeOfPayment) {
+		case HORA:
+			return this.hourPrice;
+
+		case DIA:
+			return this.dayPrice;
+
+		case MES:
+			return this.monthPrice;
+
+		default:
+			throw null;
+		}
+	}
 }

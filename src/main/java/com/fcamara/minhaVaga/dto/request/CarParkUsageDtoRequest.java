@@ -9,7 +9,6 @@ import lombok.Getter;
 @Getter
 public class CarParkUsageDtoRequest {
 	
-	
 	@NotNull(message = "O tipo de pagamento deve ser informado.")
 	private TypeOfPayment typeOfPayment;
 }

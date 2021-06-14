@@ -2,7 +2,7 @@ package com.fcamara.minhaVaga.model;
 
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,34 +21,39 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 public class CarParkUsage {
-	
-	public CarParkUsage(Timestamp entranceTime, Vacancy vacancy, Vehicle vehicle, TypeOfPayment typeOfPayment) {
-		this.entraceTime = entranceTime;
-		this.vacancy = vacancy;
-		this.vehicle = vehicle;
-		this.typeOfPayment = typeOfPayment;
-		this.paidPrice = vacancy.getHourPrice();
-	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	private Vehicle vehicle;
 	
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	private Vacancy vacancy;
 	
 	@Column(nullable = false)
-	private Timestamp entraceTime;
+	private ZonedDateTime entraceTime;
 	
 	@Column
-	private Timestamp exitTime;
+	private ZonedDateTime exitTime;
 	
 	@Enumerated(EnumType.STRING)
 	private TypeOfPayment typeOfPayment;
 	
 	@Column
-	private BigDecimal paidPrice;
+	private BigDecimal basePaidPrice;
+	
+	public CarParkUsage(Vacancy vacancy, Vehicle vehicle, TypeOfPayment typeOfPayment) {
+		this.entraceTime =  ZonedDateTime.now();
+		this.vacancy = vacancy;
+		this.vehicle = vehicle;
+		this.typeOfPayment = typeOfPayment;
+		this.basePaidPrice = vacancy.getPrice(typeOfPayment);
+	}
+	
+	public void exit() {
+		this.exitTime =  ZonedDateTime.now();
+	}
+	
 }	

@@ -1,15 +1,15 @@
 package com.fcamara.minhaVaga.service;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.fcamara.minhaVaga.dto.request.CarParkUsageDtoRequest;
 import com.fcamara.minhaVaga.model.CarParkUsage;
 import com.fcamara.minhaVaga.model.TypeOfPayment;
 import com.fcamara.minhaVaga.model.Vacancy;
@@ -30,12 +30,16 @@ public class CarParkUsageService {
 	VehicleRepository vehicleRepository;
 
 	private int howManyFreeVacanciesOneCarParkHave(Vacancy vacancy) {
-		// To do reduzir trafego da query - DB deve devolver apenas o numero de rows e não todas elas para contar aqui.
+		// TODO reduzir trafego da query - DB deve devolver apenas o numero de rows e
+		// não todas elas para contar aqui.
 		List<CarParkUsage> inUseVacancies = carParkUsageRepository.findByVacancyIdAndExitTimeIsNull(vacancy.getId());
 		return vacancy.getAmount() - inUseVacancies.size();
 	}
 
-	public CarParkUsage insert(Long vacancyId, Long vehicleId, TypeOfPayment typeOfPayment) {
+	public CarParkUsage insertParking(Long vacancyId, Long vehicleId, TypeOfPayment typeOfPayment) {
+		// Talvez fosse interessante adicionar um observer
+		// para que o estacionamento fosse notificado com a entrada de cada usuario,
+		// assim poderia atualizar o limite de vagas no client side
 		Vacancy vacancy = findVacancyById(vacancyId);
 		Vehicle vehicle = findVehicleById(vehicleId);
 		if (vacancy.getTypeOfVehicle() == vehicle.getModel().getTypeOfVehicle()) {
@@ -49,9 +53,18 @@ public class CarParkUsageService {
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Veiculo não compativel com o tipo de vaga.");
 	}
 
+	@Transactional
+	public CarParkUsage leaveParking(Long vehicleId) {
+		Optional<CarParkUsage> searchedCarParkUsage = carParkUsageRepository.findByVehicleIdAndExitTimeIsNull(vehicleId);
+		if (searchedCarParkUsage.isEmpty())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Veiculo não localizado.");
+		CarParkUsage carParkUsage = searchedCarParkUsage.get();
+		carParkUsage.exit();
+		return carParkUsage;
+	}
+
 	private CarParkUsage createCarParkUsage(Vacancy vacancy, Vehicle vehicle, TypeOfPayment typeOfPayment) {
-		Timestamp entranceTime = new Timestamp(System.currentTimeMillis());
-		return new CarParkUsage(entranceTime, vacancy, vehicle, typeOfPayment);
+		return new CarParkUsage(vacancy, vehicle, typeOfPayment);
 	}
 
 	private Vacancy findVacancyById(Long vacancyId) {
@@ -67,4 +80,5 @@ public class CarParkUsageService {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Veiculo não localizado.");
 		return searchedVehicle.get();
 	}
+
 }

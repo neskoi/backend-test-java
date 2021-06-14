@@ -33,7 +33,7 @@ VALUES('1', '25', '5.0', '20.0', '120.0', 'MOTO');
 INSERT INTO vacancy(adress_id, amount, hour_price, day_price, month_price, type_of_vehicle) 
 VALUES('1', '50', '6.0', '25.0', '150.0', 'CARRO');
 INSERT INTO vacancy(adress_id, amount, hour_price, day_price, month_price, type_of_vehicle) 
-VALUES('1', '1', '500', '1000', '2000', 'CARRO');
+VALUES('1', '1', '5', '15', '50', 'CARRO');
 INSERT INTO vacancy(adress_id, amount, hour_price, day_price, month_price, type_of_vehicle) 
 VALUES('1', '50', '6.0', '25.0', '150.0', 'CARRO');
 INSERT INTO vacancy(adress_id, amount, hour_price, day_price, month_price, type_of_vehicle) 
