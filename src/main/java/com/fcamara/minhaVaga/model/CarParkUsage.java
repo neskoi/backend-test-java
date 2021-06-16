@@ -37,7 +37,7 @@ public class CarParkUsage {
 	private Vacancy vacancy;
 
 	@Column(nullable = false)
-	private ZonedDateTime entraceTime;
+	private ZonedDateTime entranceTime;
 
 	private ZonedDateTime exitTime;
 
@@ -49,7 +49,7 @@ public class CarParkUsage {
 	private BigDecimal totalPrice;
 
 	public CarParkUsage(Vacancy vacancy, Vehicle vehicle, TypeOfPayment typeOfPayment) {
-		this.entraceTime = ZonedDateTime.now();
+		this.entranceTime = ZonedDateTime.now();
 		this.vacancy = vacancy;
 		this.vehicle = vehicle;
 		this.typeOfPayment = typeOfPayment;
@@ -62,7 +62,7 @@ public class CarParkUsage {
 	}
 	
 	public BigDecimal calculateTotalPrice() {
-		long elapsedSeconds = ChronoUnit.SECONDS.between(entraceTime, exitTime);
+		long elapsedSeconds = ChronoUnit.SECONDS.between(entranceTime, exitTime);
 		switch (this.typeOfPayment) {
 		case HORA:
 			double fractionalHours = elapsedSeconds / 3600.0;

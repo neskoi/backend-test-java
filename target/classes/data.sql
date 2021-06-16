@@ -33,9 +33,9 @@ VALUES('1', '25', '5.0', '20.0', '120.0', 'MOTO');
 INSERT INTO vacancy(adress_id, amount, hour_price, day_price, month_price, type_of_vehicle) 
 VALUES('1', '50', '6.0', '25.0', '150.0', 'CARRO');
 INSERT INTO vacancy(adress_id, amount, hour_price, day_price, month_price, type_of_vehicle) 
-VALUES('1', '1', '5', '15', '50', 'CARRO');
+VALUES('2', '1', '5', '15', '50', 'CARRO');
 INSERT INTO vacancy(adress_id, amount, hour_price, day_price, month_price, type_of_vehicle) 
-VALUES('1', '50', '6.0', '25.0', '150.0', 'CARRO');
+VALUES('2', '50', '6.0', '25.0', '150.0', 'CARRO');
 INSERT INTO vacancy(adress_id, amount, hour_price, day_price, month_price, type_of_vehicle) 
 VALUES('3', '35', '8.0', '40.0', '200.0', 'CARRO');
 /*===========================================================*/
@@ -98,4 +98,27 @@ INSERT INTO vehicle(plate, color_id, model_id, user_id)
 VALUES('DDD0000', '4', '4', '4');
 INSERT INTO vehicle(plate, color_id, model_id, user_id) 
 VALUES('EEE0000', '5', '5', '4');
+INSERT INTO vehicle(plate, color_id, model_id, user_id) 
+VALUES('FFF0000', '4', '5', '4');
+/*===========================================================*/
+INSERT INTO car_park_usage(entrance_time, exit_time, base_paid_price, total_price, type_of_payment, vacancy_id, vehicle_id) 
+VALUES('2021-01-15T16:20:23.8374058-03:00','2021-01-15T21:21:23.8374058-03:00','10.0','10.0', 'HORA', '1', '1');
+INSERT INTO car_park_usage(entrance_time, exit_time, base_paid_price, total_price, type_of_payment, vacancy_id, vehicle_id) 
+VALUES('2021-02-15T16:20:23.8374058-03:00','2021-02-15T22:22:23.8374058-03:00','10.0','10.0', 'HORA', '1', '2');
+INSERT INTO car_park_usage(entrance_time, exit_time, base_paid_price, total_price, type_of_payment, vacancy_id, vehicle_id) 
+VALUES('2021-02-15T18:20:23.8374058-03:00','2021-02-15T22:20:23.8374058-03:00','10.0','10.0', 'HORA', '1', '3');
+INSERT INTO car_park_usage(entrance_time, exit_time, base_paid_price, total_price, type_of_payment, vacancy_id, vehicle_id) 
+VALUES('2021-03-15T16:20:23.8374058-03:00','2021-03-15T23:23:23.8374058-03:00','10.0','0', 'MES', '1', '3');
+INSERT INTO car_park_usage(entrance_time, exit_time, base_paid_price, total_price, type_of_payment, vacancy_id, vehicle_id) 
+VALUES('2021-04-15T16:20:23.8374058-03:00','2021-04-15T23:23:23.8374058-03:00','10.0','10.0', 'HORA', '5', '5');
+INSERT INTO car_park_usage(entrance_time, exit_time, base_paid_price, total_price, type_of_payment, vacancy_id, vehicle_id) 
+VALUES('2021-05-15T16:20:23.8374058-03:00','2021-05-15T22:22:23.8374058-03:00','10.0','10.0', 'DIA', '5', '6');
+INSERT INTO car_park_usage(entrance_time, exit_time, base_paid_price, total_price, type_of_payment, vacancy_id, vehicle_id) 
+VALUES('2021-06-15T14:14:23.8374058-03:00','2021-06-15T21:21:23.8374058-03:00','10.0','10.0', 'DIA', '5', '2');
+INSERT INTO car_park_usage(entrance_time, exit_time, base_paid_price, total_price, type_of_payment, vacancy_id, vehicle_id) 
+VALUES('2021-07-15T15:15:23.8374058-03:00','2021-07-15T20:20:23.8374058-03:00','10.0','10.0', 'HORA', '2', '4');
+INSERT INTO car_park_usage(entrance_time, exit_time, base_paid_price, total_price, type_of_payment, vacancy_id, vehicle_id) 
+VALUES('2021-08-15T16:16:23.8374058-03:00','2021-08-15T19:19:23.8374058-03:00','10.0','10.0', 'HORA', '5', '5');
+INSERT INTO car_park_usage(entrance_time, exit_time, base_paid_price, total_price, type_of_payment, vacancy_id, vehicle_id) 
+VALUES('2020-09-15T17:17:23.8374058-03:00','2020-09-15T18:18:23.8374058-03:00','10.0','10.0', 'HORA', '2', '6');
 /*===========================================================*/

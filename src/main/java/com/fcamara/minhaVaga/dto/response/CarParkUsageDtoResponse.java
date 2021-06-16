@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
+import org.springframework.data.domain.Page;
+
 import com.fcamara.minhaVaga.model.CarParkUsage;
 import com.fcamara.minhaVaga.model.TypeOfPayment;
 import com.fcamara.minhaVaga.model.Vacancy;
@@ -18,7 +20,7 @@ public class CarParkUsageDtoResponse {
 
 	private Vacancy vacancy;
 
-	private ZonedDateTime entraceTime;
+	private ZonedDateTime entranceTime;
 
 	private ZonedDateTime exitTime;
 
@@ -34,7 +36,7 @@ public class CarParkUsageDtoResponse {
 	public CarParkUsageDtoResponse(CarParkUsage carParkUsage) {
 		this.vehicle = carParkUsage.getVehicle();
 		this.vacancy = carParkUsage.getVacancy();
-		this.entraceTime = carParkUsage.getEntraceTime();
+		this.entranceTime = carParkUsage.getEntranceTime();
 		this.exitTime = carParkUsage.getExitTime();
 		this.typeOfPayment = carParkUsage.getTypeOfPayment();
 		this.basePaidPrice = carParkUsage.getBasePaidPrice();
@@ -42,8 +44,12 @@ public class CarParkUsageDtoResponse {
 		this.parkedTime = elapsedTime();
 	}
 
+	public static Page<CarParkUsageDtoResponse> bulkConvertToDtoResponse(Page<CarParkUsage> carParkUsages){
+		return carParkUsages.map(CarParkUsageDtoResponse::new);
+	}
+	
 	public String elapsedTime() {
-		long elapsedSeconds = ChronoUnit.SECONDS.between(entraceTime, exitTime);
+		long elapsedSeconds = ChronoUnit.SECONDS.between(entranceTime, exitTime);
 		long hours = elapsedSeconds / 3600;
 		long minutes = (elapsedSeconds % 3600) / 60;
 		long seconds = elapsedSeconds % 60;

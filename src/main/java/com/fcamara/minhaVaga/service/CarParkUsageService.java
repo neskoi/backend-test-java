@@ -1,15 +1,20 @@
 package com.fcamara.minhaVaga.service;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.fcamara.minhaVaga.dto.response.CarParkUsageDtoResponse;
 import com.fcamara.minhaVaga.model.CarParkUsage;
 import com.fcamara.minhaVaga.model.TypeOfPayment;
 import com.fcamara.minhaVaga.model.Vacancy;
@@ -17,6 +22,7 @@ import com.fcamara.minhaVaga.model.Vehicle;
 import com.fcamara.minhaVaga.repository.CarParkAdressVacancyRespository;
 import com.fcamara.minhaVaga.repository.CarParkUsageRepository;
 import com.fcamara.minhaVaga.repository.VehicleRepository;
+import com.fcamara.minhaVaga.util.ChronoMath;
 
 @Service
 public class CarParkUsageService {
@@ -85,4 +91,20 @@ public class CarParkUsageService {
 		return searchedVehicle.get();
 	}
 
+	public Page<CarParkUsageDtoResponse> searchRegistersBetweenDates(Long carParkId, ZonedDateTime entranceTime, ZonedDateTime exitTime, int page,
+			int amount) {
+		if(ChronoMath.hasMoreThanAYearBetweenDates(entranceTime, exitTime))
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Intervalo superior a um ano rejeitado.");
+		Pageable pageable = PageRequest.of(page, amount);
+		Page<CarParkUsage> carParkUsages = carParkUsageRepository.findAllRegisterOfCarParkUsageBetweenDates(carParkId, entranceTime, exitTime, pageable);
+		return CarParkUsageDtoResponse.bulkConvertToDtoResponse(carParkUsages);
+	}
+	
+	public Page<CarParkUsageDtoResponse> searchRegistersAfterDate(Long carParkId, ZonedDateTime entranceTime, int page,
+			int amount) {
+		ZonedDateTime exitTime  = ChronoMath.addAYear(entranceTime);
+		Pageable pageable = PageRequest.of(page, amount);
+		Page<CarParkUsage> carParkUsages = carParkUsageRepository.findAllRegisterOfCarParkUsageBetweenDates(carParkId, entranceTime, exitTime, pageable);
+		return CarParkUsageDtoResponse.bulkConvertToDtoResponse(carParkUsages);
+	}
 }

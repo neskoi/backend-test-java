@@ -11,7 +11,9 @@ import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -23,6 +25,7 @@ public class Vehicle {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
+	@Getter(value=AccessLevel.NONE)
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "user_id", nullable = false)
 	@JsonIgnore
@@ -45,5 +48,9 @@ public class Vehicle {
 		this.color = color;
 		this.plate = plate;
 	}
+	
+//	public User getUser() {
+//		return null;
+//	}
 
 }
