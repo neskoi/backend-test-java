@@ -8,7 +8,6 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -71,12 +70,12 @@ public class CarParkUsageService {
 	}
 
 	public Page<CarParkUsageDtoResponse> listWhoEnteredInLastCustomInterval(Long carParkId, ZonedDateTime entranceTime,
-			ZonedDateTime exitTime, boolean leaves, int page, int amount) {
+			ZonedDateTime exitTime, boolean leaves, Pageable pageable) {
 
 		if (ChronoMath.hasMoreThanAYearBetweenDates(entranceTime, exitTime))
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Intervalo superior a um ano rejeitado.");
 
-		Pageable pageable = PageRequest.of(page, amount);
+		
 		Page<CarParkUsage> carParkUsages;
 		if (leaves) {
 			System.out.println("saidas");
@@ -91,8 +90,7 @@ public class CarParkUsageService {
 	}
 
 	public Page<CarParkUsageDtoResponse> listWhoEnteredInLastChoosedInterval(Long carParkId, TimeSpaces interval,
-			boolean leaves, int page, int amount) {
-		Pageable pageable = PageRequest.of(page, amount);
+			boolean leaves, Pageable pageable) {
 		Page<CarParkUsage> carParkUsages;
 		if (leaves) {
 			carParkUsages = carParkUsageRepository.allLeavesBetweenDates(carParkId, interval.getInitialTime(),
