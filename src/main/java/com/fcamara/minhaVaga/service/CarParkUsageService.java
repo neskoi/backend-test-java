@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.fcamara.minhaVaga.dto.response.CarParkUsageDtoResponse;
+import com.fcamara.minhaVaga.dto.response.ReportDtoResponse;
 import com.fcamara.minhaVaga.model.CarParkUsage;
 import com.fcamara.minhaVaga.model.TypeOfPayment;
 import com.fcamara.minhaVaga.model.Vacancy;
@@ -23,6 +24,7 @@ import com.fcamara.minhaVaga.repository.CarParkAdressVacancyRespository;
 import com.fcamara.minhaVaga.repository.CarParkUsageRepository;
 import com.fcamara.minhaVaga.repository.VehicleRepository;
 import com.fcamara.minhaVaga.util.ChronoMath;
+import com.fcamara.minhaVaga.util.TimeSpaces;
 
 @Service
 public class CarParkUsageService {
@@ -35,19 +37,13 @@ public class CarParkUsageService {
 	@Autowired
 	VehicleRepository vehicleRepository;
 
-	private int howManyFreeVacanciesOneCarParkHave(Vacancy vacancy) {
-		// TODO reduzir trafego da query - DB deve devolver apenas o numero de rows e
-		// não todas elas para contar aqui.
-		List<CarParkUsage> inUseVacancies = carParkUsageRepository.findByVacancyIdAndExitTimeIsNull(vacancy.getId());
-		return vacancy.getAmount() - inUseVacancies.size();
-	}
-
 	public CarParkUsage insertParking(Long vacancyId, Long vehicleId, TypeOfPayment typeOfPayment) {
 		// Talvez fosse interessante adicionar um observer
 		// para que o estacionamento fosse notificado com a entrada de cada usuario,
 		// assim poderia atualizar o limite de vagas no client side
-		//Como reduzir essa função?
-		Optional<CarParkUsage> searchedCarParkUsage = carParkUsageRepository.findByVehicleIdAndExitTimeIsNull(vehicleId);
+		// Como reduzir essa função?
+		Optional<CarParkUsage> searchedCarParkUsage = carParkUsageRepository
+				.findByVehicleIdAndExitTimeIsNull(vehicleId);
 		if (searchedCarParkUsage.isPresent())
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Veiculo já estacionado.");
 		Vacancy vacancy = findVacancyById(vacancyId);
@@ -55,7 +51,7 @@ public class CarParkUsageService {
 		if (vacancy.getTypeOfVehicle() == vehicle.getModel().getTypeOfVehicle()) {
 			int leftVacancies = howManyFreeVacanciesOneCarParkHave(vacancy);
 			if (leftVacancies > 0) {
-				CarParkUsage carParkUsageToRegister = createCarParkUsage(vacancy, vehicle, typeOfPayment);
+				CarParkUsage carParkUsageToRegister = new CarParkUsage(vacancy, vehicle, typeOfPayment);
 				return carParkUsageRepository.save(carParkUsageToRegister);
 			}
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "As vagas desse tipo estão lotadas.");
@@ -65,16 +61,61 @@ public class CarParkUsageService {
 
 	@Transactional
 	public CarParkUsage leaveParking(Long vehicleId) {
-		Optional<CarParkUsage> searchedCarParkUsage = carParkUsageRepository.findByVehicleIdAndExitTimeIsNull(vehicleId);
+		Optional<CarParkUsage> searchedCarParkUsage = carParkUsageRepository
+				.findByVehicleIdAndExitTimeIsNull(vehicleId);
 		if (searchedCarParkUsage.isEmpty())
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Veiculo não localizado.");
 		CarParkUsage carParkUsage = searchedCarParkUsage.get();
 		carParkUsage.exit();
 		return carParkUsage;
 	}
-	
- 	private CarParkUsage createCarParkUsage(Vacancy vacancy, Vehicle vehicle, TypeOfPayment typeOfPayment) {
-		return new CarParkUsage(vacancy, vehicle, typeOfPayment);
+
+	public Page<CarParkUsageDtoResponse> listWhoEnteredInLastCustomInterval(Long carParkId, ZonedDateTime entranceTime,
+			ZonedDateTime exitTime, boolean leaves, int page, int amount) {
+
+		if (ChronoMath.hasMoreThanAYearBetweenDates(entranceTime, exitTime))
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Intervalo superior a um ano rejeitado.");
+
+		Pageable pageable = PageRequest.of(page, amount);
+		Page<CarParkUsage> carParkUsages;
+		if (leaves) {
+			System.out.println("saidas");
+			carParkUsages = carParkUsageRepository.allLeavesBetweenDates(carParkId, entranceTime, exitTime, pageable);
+		} else {
+			System.out.println("entradas");
+			carParkUsages = carParkUsageRepository.allEntrancesBetweenDates(carParkId, entranceTime, exitTime,
+					pageable);
+		}
+
+		return CarParkUsageDtoResponse.bulkConvertToDtoResponse(carParkUsages);
+	}
+
+	public Page<CarParkUsageDtoResponse> listWhoEnteredInLastChoosedInterval(Long carParkId, TimeSpaces interval,
+			boolean leaves, int page, int amount) {
+		Pageable pageable = PageRequest.of(page, amount);
+		Page<CarParkUsage> carParkUsages;
+		if (leaves) {
+			carParkUsages = carParkUsageRepository.allLeavesBetweenDates(carParkId, interval.getInitialTime(),
+					interval.getFinalTime(), pageable);
+		} else {
+			carParkUsages = carParkUsageRepository.allEntrancesBetweenDates(carParkId, interval.getInitialTime(),
+					interval.getFinalTime(), pageable);
+		}
+		return CarParkUsageDtoResponse.bulkConvertToDtoResponse(carParkUsages);
+	}
+
+	public ReportDtoResponse reportLastChoosedInterval(Long carParkId, TimeSpaces reportCreator) {
+		List<CarParkUsage> dataToAnalyse = carParkUsageRepository.allEntrancesBetweenDates(carParkId,
+				reportCreator.getInitialTime(), reportCreator.getFinalTime());
+		return ReportDtoResponse.createReport(dataToAnalyse);
+	}
+
+	public ReportDtoResponse reportCustomInterval(Long carParkId, ZonedDateTime entranceTime, ZonedDateTime exitTime) {
+		if (ChronoMath.hasMoreThanAYearBetweenDates(entranceTime, exitTime))
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Intervalo superior a um ano rejeitado.");
+		List<CarParkUsage> dataToAnalyse = carParkUsageRepository.allEntrancesBetweenDates(carParkId, entranceTime,
+				exitTime);
+		return ReportDtoResponse.createReport(dataToAnalyse);
 	}
 
 	private Vacancy findVacancyById(Long vacancyId) {
@@ -91,20 +132,11 @@ public class CarParkUsageService {
 		return searchedVehicle.get();
 	}
 
-	public Page<CarParkUsageDtoResponse> searchRegistersBetweenDates(Long carParkId, ZonedDateTime entranceTime, ZonedDateTime exitTime, int page,
-			int amount) {
-		if(ChronoMath.hasMoreThanAYearBetweenDates(entranceTime, exitTime))
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Intervalo superior a um ano rejeitado.");
-		Pageable pageable = PageRequest.of(page, amount);
-		Page<CarParkUsage> carParkUsages = carParkUsageRepository.findAllRegisterOfCarParkUsageBetweenDates(carParkId, entranceTime, exitTime, pageable);
-		return CarParkUsageDtoResponse.bulkConvertToDtoResponse(carParkUsages);
+	private int howManyFreeVacanciesOneCarParkHave(Vacancy vacancy) {
+		// TODO reduzir trafego da query - DB deve devolver apenas o numero de rows e
+		// não todas elas para contar aqui.
+		List<CarParkUsage> inUseVacancies = carParkUsageRepository.findByVacancyIdAndExitTimeIsNull(vacancy.getId());
+		return vacancy.getAmount() - inUseVacancies.size();
 	}
-	
-	public Page<CarParkUsageDtoResponse> searchRegistersAfterDate(Long carParkId, ZonedDateTime entranceTime, int page,
-			int amount) {
-		ZonedDateTime exitTime  = ChronoMath.addAYear(entranceTime);
-		Pageable pageable = PageRequest.of(page, amount);
-		Page<CarParkUsage> carParkUsages = carParkUsageRepository.findAllRegisterOfCarParkUsageBetweenDates(carParkId, entranceTime, exitTime, pageable);
-		return CarParkUsageDtoResponse.bulkConvertToDtoResponse(carParkUsages);
-	}
+
 }

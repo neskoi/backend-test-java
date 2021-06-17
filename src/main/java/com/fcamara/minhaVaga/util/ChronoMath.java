@@ -12,12 +12,17 @@ public final class ChronoMath {
 	public static boolean hasMoreThanAYearBetweenDates(ZonedDateTime entraceTime, ZonedDateTime exitTime) {
 		return ChronoUnit.DAYS.between(entraceTime, exitTime) > 366;
 	}
-	
-	public static boolean hasMoreThanOneHourBetweenDates(ZonedDateTime entraceTime, ZonedDateTime exitTime) {
-		return ChronoUnit.HOURS.between(entraceTime, exitTime) > 1;
+
+	public static ZonedDateTime now() {
+		return ZonedDateTime.now();
 	}
 
-	public static ZonedDateTime addAYear(ZonedDateTime entranceTime) {
-		return ChronoUnit.DAYS.addTo(entranceTime, 366);
+	public static ZonedDateTime addOneOfTimeTypeFromNow(ChronoUnit time, ZonedDateTime date) {
+		return time.addTo(date, -1);
 	}
+	
+	public static ZonedDateTime removeOneOfTimeTypeFromNow(ChronoUnit time) {
+		return time.addTo(ZonedDateTime.now(), -1);
+	}
+
 }
