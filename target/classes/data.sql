@@ -1,5 +1,5 @@
 INSERT INTO user(name, password, cpf, email) 
-VALUES('Koi Nes', '$2a$10$ENa9esVD8dBOzWKegTaHY.IsucQ.m29dXKhSoyJYgGDd1rCNFqcka', '42673187006', 'koi@com.com');
+VALUES('Koi Nes', '$2a$10$pEPL.hl1EP4i6oDWmpzar.XJmwkrfb/YKSkonHax00URRJRVeK0rm', '42673187006', 'koi@com.com');
 
 INSERT INTO user(name, password, cpf, email) 
 VALUES('Jan Nes', '$2a$10$ENa9esVD8dBOzWKegTaHY.IsucQ.m29dXKhSoyJYgGDd1rCNFqcka', '10510159010', 'jannes@com.com');
@@ -11,7 +11,7 @@ INSERT INTO user(name, password, cpf, email)
 VALUES('Tais Fernanda', '$2a$10$ENa9esVD8dBOzWKegTaHY.IsucQ.m29dXKhSoyJYgGDd1rCNFqcka', '77960554048', 'tuca@com.com');
 /*===========================================================*/
 INSERT INTO car_park(name, password, cnpj, email, phone) 
-VALUES('Estaciona Legal', '$2a$10$ENa9esVD8dBOzWKegTaHY.IsucQ.m29dXKhSoyJYgGDd1rCNFqcka', '36388702000131', 'estalegal@com.com', '1140028922');
+VALUES('Estaciona Legal', '$2a$10$pEPL.hl1EP4i6oDWmpzar.XJmwkrfb/YKSkonHax00URRJRVeK0rm', '36388702000131', 'estalegal@com.com', '1140028922');
 
 INSERT INTO car_park(name, password, cnpj, email, phone) 
 VALUES('Paradao Veiculos', '$2a$10$ENa9esVD8dBOzWKegTaHY.IsucQ.m29dXKhSoyJYgGDd1rCNFqcka', '14284279000197', 'padrao@com.com', '2251139033');
@@ -121,4 +121,9 @@ INSERT INTO car_park_usage(entrance_time, exit_time, base_paid_price, total_pric
 VALUES('2021-08-15T16:16:23.8374058-03:00','2021-08-15T19:19:23.8374058-03:00','10.0','10.0', 'HORA', '5', '5');
 INSERT INTO car_park_usage(entrance_time, exit_time, base_paid_price, total_price, type_of_payment, vacancy_id, vehicle_id) 
 VALUES('2020-09-15T17:17:23.8374058-03:00','2020-09-15T18:18:23.8374058-03:00','10.0','10.0', 'HORA', '2', '6');
+/*===========================================================*/
+INSERT INTO role(name) 
+VALUES('CAROWNER');
+INSERT INTO role(name) 
+VALUES('CARPARK');
 /*===========================================================*/

@@ -70,8 +70,8 @@ public class UserService {
 
 	private boolean isEmailAlreadyRegistered(String email) {
 		try {
-			User emailRegistered = userRepository.findByEmail(email);
-			if (emailRegistered != null)
+			Optional<User> emailRegistered = userRepository.findByEmail(email);
+			if (emailRegistered.isPresent())
 				return true;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());

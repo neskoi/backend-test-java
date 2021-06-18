@@ -159,8 +159,8 @@ public class CarParkService {
 
 	private boolean isEmailAlreadyRegistered(String email) {
 		try {
-			CarPark emailRegistered = carParkRepository.findByEmail(email);
-			if (emailRegistered != null)
+			 Optional<CarPark> emailRegistered = carParkRepository.findByEmail(email);
+			if (emailRegistered.isPresent())
 				return true;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
