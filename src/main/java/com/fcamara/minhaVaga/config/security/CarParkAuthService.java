@@ -19,9 +19,9 @@ public class CarParkAuthService  implements UserDetailsService {
 	
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-//		Optional<CarPark> searchedCarPark = carParksRepository.findByEmail(email);
-//		if(searchedCarPark.isPresent())
-//				return searchedCarPark.get();
+		Optional<CarPark> searchedCarPark = carParksRepository.findByEmail(email);
+		if(searchedCarPark.isPresent())
+				return searchedCarPark.get();
 		throw new UsernameNotFoundException("Dados invalidos.");
 	}
 

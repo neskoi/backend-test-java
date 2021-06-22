@@ -127,3 +127,19 @@ VALUES('CAROWNER');
 INSERT INTO role(name) 
 VALUES('CARPARK');
 /*===========================================================*/
+INSERT INTO car_park_roles(car_park_id, roles_id) 
+VALUES('1', '2');
+INSERT INTO car_park_roles(car_park_id, roles_id) 
+VALUES('2', '2');
+INSERT INTO car_park_roles(car_park_id, roles_id) 
+VALUES('3', '2');
+/*===========================================================*/
+INSERT INTO user_roles(user_id, roles_id) 
+VALUES('1', '1');
+INSERT INTO user_roles(user_id, roles_id) 
+VALUES('2', '1');
+INSERT INTO user_roles(user_id, roles_id) 
+VALUES('3', '1');
+INSERT INTO user_roles(user_id, roles_id) 
+VALUES('4', '1');
+/*===========================================================*/

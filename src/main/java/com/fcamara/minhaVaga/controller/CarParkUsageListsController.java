@@ -19,7 +19,7 @@ import com.fcamara.minhaVaga.service.CarParkUsageService;
 import com.fcamara.minhaVaga.util.TimeSpaces;
 
 @RestController
-@RequestMapping("car-park-usage-info/{carParkId}")
+@RequestMapping("/carpark/usage-info/{carParkId}")
 public class CarParkUsageListsController {
 
 	@Autowired

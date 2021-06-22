@@ -18,13 +18,13 @@ import com.fcamara.minhaVaga.model.CarParkUsage;
 import com.fcamara.minhaVaga.service.CarParkUsageService;
 
 @RestController
-@RequestMapping("/carpark-vacancy/{vacancyId}/vehicle/{vehicleId}")
+@RequestMapping("/user/on/{vacancyId}/vehicle/{vehicleId}")
 public class CarParkUsageController {
 
 	@Autowired
 	CarParkUsageService carParkUsageService;
 
-	@PostMapping("/parking")
+	@PostMapping("/park")
 	public ResponseEntity<CarParkUsage> parking(@PathVariable Long vacancyId, @PathVariable Long vehicleId,
 			@Valid @RequestBody CarParkUsageDtoRequest typeOfPayment) {
 		CarParkUsage carParkUsage = carParkUsageService.insertParking(vacancyId, vehicleId,

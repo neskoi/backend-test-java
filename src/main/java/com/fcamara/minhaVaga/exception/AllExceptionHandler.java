@@ -14,37 +14,37 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class AllExceptionHandler {
-//
-//	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-//	@ExceptionHandler(MethodArgumentNotValidException.class)
-//	public List<FieldErrorDto> handleValidationException(MethodArgumentNotValidException exception) {
-//		List<FieldErrorDto> errors = new ArrayList<>();
-//		List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
-//		
-//		fieldErrors.forEach(e ->{
-//			FieldErrorDto error = new FieldErrorDto(e.getField(), e.getDefaultMessage());
-//			errors.add(error);
-//		});
-//		
-//		return errors;
-//	}
-//	
-//	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-//	@ExceptionHandler(UserAlreadyExistsException.class)
-//	public String handleUserAlreadyExistsException(UserAlreadyExistsException exception) {
-//		return exception.getMessage();
-//	}
-//	
-//	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-//	@ExceptionHandler(Exception.class)
-//	public String Exception(Exception exception) {
-//		return exception.getMessage();
-//	}
-//	
-//	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-//    @ExceptionHandler(HttpMessageNotReadableException.class)
-//    public ResponseEntity<?> handleException(Exception exception) {
-//		return ResponseEntity.ok("Solicitação mal formada. \n");
-//    }
-//	
+
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public List<FieldErrorDto> handleValidationException(MethodArgumentNotValidException exception) {
+		List<FieldErrorDto> errors = new ArrayList<>();
+		List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
+		
+		fieldErrors.forEach(e ->{
+			FieldErrorDto error = new FieldErrorDto(e.getField(), e.getDefaultMessage());
+			errors.add(error);
+		});
+		
+		return errors;
+	}
+	
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(UserAlreadyExistsException.class)
+	public String handleUserAlreadyExistsException(UserAlreadyExistsException exception) {
+		return exception.getMessage();
+	}
+	
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(Exception.class)
+	public String Exception(Exception exception) {
+		return exception.getMessage();
+	}
+	
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<?> handleException(Exception exception) {
+		return ResponseEntity.ok("Solicitação mal formada. \n");
+    }
+	
 }
