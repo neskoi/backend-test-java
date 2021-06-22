@@ -2,6 +2,7 @@ package com.fcamara.minhaVaga.controller;
 
 import java.net.URI;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.fcamara.minhaVaga.config.security.TokenService;
 import com.fcamara.minhaVaga.dto.request.UserDtoRequest;
 import com.fcamara.minhaVaga.dto.request.UserDtoUpdateEmailRequest;
 import com.fcamara.minhaVaga.dto.request.UserDtoUpdatePasswordRequest;
@@ -35,19 +37,16 @@ public class UsersController {
 
 	@Autowired
 	private VehicleService vehicleService;
+	
+	@Autowired
+	TokenService tokenService;
 
-	@GetMapping("/{id}")
-	public ResponseEntity<UserDtoResponse> findOneUser(@PathVariable Long id) {
-		User user = userService.findOneUser(id);
+	@GetMapping("/info")
+	public ResponseEntity<UserDtoResponse> findOneUser(HttpServletRequest request) {
+		Long userId = tokenService.returnRequesterId(request);
+		User user = userService.findOneUser(userId);
 		return ResponseEntity.ok(new UserDtoResponse(user));
 	};
-
-	//Acredito que essa rota seja desnecessaria.
-	@GetMapping("/vehicle/{id}")
-	public ResponseEntity<Vehicle> findOneVehicle(@PathVariable Long id){
-		Vehicle vehicle = vehicleService.findOneVehicle(id);
-		return ResponseEntity.ok(vehicle);
-	}
 	
 	@PostMapping("/register")
 	public ResponseEntity<UserDtoResponse> register(@Valid @RequestBody UserDtoRequest userRequest,
@@ -58,37 +57,42 @@ public class UsersController {
 		return ResponseEntity.created(uri).body(new UserDtoResponse(registeredUser));
 	}
 
-	@PostMapping("{userId}/register-vehicle")
-	public ResponseEntity<Vehicle> registerVehicle(@PathVariable Long userId,
+	@PostMapping("/register-vehicle")
+	public ResponseEntity<Vehicle> registerVehicle(HttpServletRequest request,
 			@Valid @RequestBody VehicleDtoRequest vehicleRequest, UriComponentsBuilder uriBuilder) {
+		Long userId = tokenService.returnRequesterId(request);
 		Vehicle registeredVehicle = vehicleService.registerVehicle(userId, vehicleRequest);
 		URI uri = uriBuilder.path("user/vehicle/{id}").buildAndExpand(registeredVehicle.getId()).toUri();
 		return ResponseEntity.created(uri).body(registeredVehicle);
 	}
 
-	@PutMapping("/update-email/{id}")
-	public ResponseEntity<UserDtoResponse> updateEmail(@PathVariable Long id,
+	@PutMapping("/update-email")
+	public ResponseEntity<UserDtoResponse> updateEmail(HttpServletRequest request,
 			@Valid @RequestBody UserDtoUpdateEmailRequest email) {
-		User response = userService.updateEmail(id, email);
+		Long userId = tokenService.returnRequesterId(request);
+		User response = userService.updateEmail(userId, email);
 		return ResponseEntity.ok(new UserDtoResponse(response));
 	}
 
-	@PutMapping("/update-password/{id}")
-	public ResponseEntity<UserDtoResponse> updatePassword(@PathVariable Long id,
+	@PutMapping("/update-password")
+	public ResponseEntity<UserDtoResponse> updatePassword(HttpServletRequest request,
 			@Valid @RequestBody UserDtoUpdatePasswordRequest password) {
-		User response = userService.updatePassword(id, password);
+		Long userId = tokenService.returnRequesterId(request);
+		User response = userService.updatePassword(userId, password);
 		return ResponseEntity.ok(new UserDtoResponse(response));
 	}
 
 	@PutMapping("/vehicle/{vehicleId}/change-color/{colorId}")
-	public ResponseEntity<Vehicle> updateVehicleColor(@PathVariable Long vehicleId,@PathVariable Long colorId){
-		Vehicle vehicle = vehicleService.changeVehicleColor(vehicleId, colorId);
+	public ResponseEntity<Vehicle> updateVehicleColor(HttpServletRequest request, @PathVariable Long vehicleId, @PathVariable Long colorId){
+		Long userId = tokenService.returnRequesterId(request);
+		Vehicle vehicle = vehicleService.changeVehicleColor(userId, vehicleId, colorId);
 		return ResponseEntity.ok(vehicle);
 	}
 	
 	@DeleteMapping("vehicle/{vehicleId}/delete")
-	public ResponseEntity<?> deleteVehicle(@PathVariable Long vehicleId){
-		vehicleService.deleteVehicle(vehicleId);
+	public ResponseEntity<?> deleteVehicle(HttpServletRequest request, @PathVariable Long vehicleId){
+		Long userId = tokenService.returnRequesterId(request);
+		vehicleService.deleteVehicle(vehicleId, userId);
 		return ResponseEntity.ok().build();
 	}
 }

@@ -1,7 +1,6 @@
 package com.fcamara.minhaVaga.model;
 
 import java.math.BigDecimal;
-
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -11,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import lombok.Data;
@@ -29,7 +29,7 @@ public class Vacancy {
 	@JoinColumn(name = "adress_id", nullable = false)
 	@JsonBackReference
 	private Adress adress;
-
+	
 	@Enumerated(EnumType.STRING)
 	private TypeOfVehicle typeOfVehicle;
 

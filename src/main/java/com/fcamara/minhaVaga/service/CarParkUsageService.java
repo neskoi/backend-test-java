@@ -36,35 +36,38 @@ public class CarParkUsageService {
 	@Autowired
 	VehicleRepository vehicleRepository;
 
-	public CarParkUsage insertParking(Long vacancyId, Long vehicleId, TypeOfPayment typeOfPayment) {
-		// Talvez fosse interessante adicionar um observer
-		// para que o estacionamento fosse notificado com a entrada de cada usuario,
-		// assim poderia atualizar o limite de vagas no client side
-		// Como reduzir essa função?
-		Optional<CarParkUsage> searchedCarParkUsage = carParkUsageRepository
-				.findByVehicleIdAndExitTimeIsNull(vehicleId);
-		if (searchedCarParkUsage.isPresent())
+	public CarParkUsage insertParking(Long userId, Long vacancyId, Long vehicleId, TypeOfPayment typeOfPayment) {
+		
+		Vehicle vehicle = this.findVehicleByIdAndUserId(vehicleId, userId);
+
+		if (this.checkIfVehicleIsAlreadyParked(vehicleId))
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Veiculo já estacionado.");
+
 		Vacancy vacancy = findVacancyById(vacancyId);
-		Vehicle vehicle = findVehicleById(vehicleId);
-		if (vacancy.getTypeOfVehicle() == vehicle.getModel().getTypeOfVehicle()) {
-			int leftVacancies = howManyFreeVacanciesOneCarParkHave(vacancy);
-			if (leftVacancies > 0) {
-				CarParkUsage carParkUsageToRegister = new CarParkUsage(vacancy, vehicle, typeOfPayment);
-				return carParkUsageRepository.save(carParkUsageToRegister);
-			}
+
+		if (vacancy.getTypeOfVehicle() != vehicle.getModel().getTypeOfVehicle())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Veiculo não compativel com o tipo de vaga.");
+
+		int leftVacancies = howManyFreeVacanciesOneCarParkHave(vacancy);
+
+		if (leftVacancies <= 0) 
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "As vagas desse tipo estão lotadas.");
-		}
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Veiculo não compativel com o tipo de vaga.");
+		
+		CarParkUsage carParkUsageToRegister = new CarParkUsage(vacancy, vehicle, typeOfPayment);
+		return carParkUsageRepository.save(carParkUsageToRegister);
 	}
 
 	@Transactional
-	public CarParkUsage leaveParking(Long vehicleId) {
-		Optional<CarParkUsage> searchedCarParkUsage = carParkUsageRepository
-				.findByVehicleIdAndExitTimeIsNull(vehicleId);
+	public CarParkUsage leaveParking(Long userId, Long vehicleId) {
+		
+		this.findVehicleByIdAndUserId(vehicleId, userId);
+		
+		Optional<CarParkUsage> searchedCarParkUsage = carParkUsageRepository.findByVehicleIdAndExitTimeIsNull(vehicleId);
 		if (searchedCarParkUsage.isEmpty())
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Veiculo não localizado.");
-		CarParkUsage carParkUsage = searchedCarParkUsage.get();
+		
+		CarParkUsage carParkUsage = searchedCarParkUsage.get();		
+		
 		carParkUsage.exit();
 		return carParkUsage;
 	}
@@ -75,7 +78,6 @@ public class CarParkUsageService {
 		if (ChronoMath.hasMoreThanAYearBetweenDates(entranceTime, exitTime))
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Intervalo superior a um ano rejeitado.");
 
-		
 		Page<CarParkUsage> carParkUsages;
 		if (leaves) {
 			System.out.println("saidas");
@@ -116,6 +118,12 @@ public class CarParkUsageService {
 		return ReportDtoResponse.createReport(dataToAnalyse);
 	}
 
+	private boolean checkIfVehicleIsAlreadyParked(Long vehicleId) {
+		Optional<CarParkUsage> searchedCarParkUsage = carParkUsageRepository
+				.findByVehicleIdAndExitTimeIsNull(vehicleId);
+		return searchedCarParkUsage.isPresent();
+	}
+	
 	private Vacancy findVacancyById(Long vacancyId) {
 		Optional<Vacancy> searchedVacancy = carParkAdressVacancyRepository.findById(vacancyId);
 		if (searchedVacancy.isEmpty())
@@ -123,10 +131,10 @@ public class CarParkUsageService {
 		return searchedVacancy.get();
 	}
 
-	private Vehicle findVehicleById(Long vehicleId) {
-		Optional<Vehicle> searchedVehicle = vehicleRepository.findById(vehicleId);
+	private Vehicle findVehicleByIdAndUserId(Long vehicleId, Long userId) {
+		Optional<Vehicle> searchedVehicle = vehicleRepository.findVehicleByIdAndUserId(vehicleId, userId);
 		if (searchedVehicle.isEmpty())
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Veiculo não localizado.");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Veiculo ou usuário invalido.");
 		return searchedVehicle.get();
 	}
 

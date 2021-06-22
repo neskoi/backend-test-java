@@ -2,6 +2,8 @@ package com.fcamara.minhaVaga.config.security;
 
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -44,6 +46,9 @@ public class TokenService {
 	}
 
 	public boolean isTokenValid(String token) {
+		if(token.isEmpty() || token == null)
+			return false;
+		
 		try {
 			Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token);
 			return true;
@@ -56,6 +61,21 @@ public class TokenService {
 	public Long getRequesterId(String token) {
 		Claims body = Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token).getBody();
 		return Long.parseLong(body.getSubject());
+	}
+
+	
+	public String recoverToken(HttpServletRequest request) {
+		String token = request.getHeader("Authorization");
+		if (token == null || token.isEmpty() || !token.startsWith("Bearer "))
+			return null;
+		return token.substring(7, token.length());
+	}
+	
+	public Long returnRequesterId(HttpServletRequest request) {
+		String token = this.recoverToken(request);
+		if(this.isTokenValid(token))
+			return this.getRequesterId(token);
+		return null; //TODO expectionInvalidToken;
 	}
 
 }

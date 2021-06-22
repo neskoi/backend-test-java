@@ -24,7 +24,7 @@ import com.fcamara.minhaVaga.repository.VehicleRepository;
 public class VehicleService {
 
 	@Autowired
-	UsersRepository userRepository; // ?
+	UsersRepository userRepository;
 
 	@Autowired
 	VehicleRepository vehicleRepository;
@@ -64,24 +64,30 @@ public class VehicleService {
 	}
 
 	@Transactional
-	public Vehicle changeVehicleColor(Long vehicleId, Long colorId) {
-		Optional<Vehicle> searchedVehicle = vehicleRepository.findById(vehicleId);
-		if (searchedVehicle.isEmpty())
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id invalido.");
-		Optional<Color> searchedColor = colorRepository.findById(colorId);
-		if (searchedColor.isEmpty())
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cor invalida.");
-		Vehicle vehicle = searchedVehicle.get();
-		vehicle.setColor(searchedColor.get());
+	public Vehicle changeVehicleColor(Long userId, Long vehicleId, Long colorId) {
+		Vehicle vehicle = this.findVehicle(vehicleId, userId);
+		Color color = this.findColor(colorId);
+		vehicle.setColor(color);
 		return vehicle;
 	}
 
 	
-	public void deleteVehicle(Long vehicleId) {
-		Optional<Vehicle> searchedVehicle = vehicleRepository.findById(vehicleId);
-		if(searchedVehicle.isEmpty())
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id invalido.");
+	public void deleteVehicle(Long vehicleId, Long userId) {
+		this.findVehicle(vehicleId, userId);
 		vehicleRepository.deleteById(vehicleId);
 	}
 
+	private Vehicle findVehicle(Long vehicleId, Long userId) {
+		Optional<Vehicle> searchedVehicle = vehicleRepository.findByIdAndUserId(vehicleId, userId);
+		if (searchedVehicle.isEmpty())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Veiculo invalido.");
+		return searchedVehicle.get();
+	}
+	
+	private Color findColor(Long colorId) {
+		Optional<Color> searchedColor = colorRepository.findById(colorId);
+		if (searchedColor.isEmpty())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id de cor invalido.");
+		return searchedColor.get();
+	}
 }

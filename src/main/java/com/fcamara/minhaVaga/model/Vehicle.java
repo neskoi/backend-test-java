@@ -48,9 +48,4 @@ public class Vehicle {
 		this.color = color;
 		this.plate = plate;
 	}
-	
-//	public User getUser() {
-//		return null;
-//	}
-
 }

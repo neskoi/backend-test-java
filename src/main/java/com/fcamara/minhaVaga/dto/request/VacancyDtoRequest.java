@@ -17,6 +17,7 @@ public class VacancyDtoRequest {
 
 	private Adress adress;
 
+	@NotNull
 	private TypeOfVehicle typeOfVehicle;
 
 	@NotNull(message = "A quantia de vagas deve ser preenchida")

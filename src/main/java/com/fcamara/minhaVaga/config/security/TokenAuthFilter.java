@@ -20,18 +20,11 @@ public abstract class TokenAuthFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		String token = recoverToken(request);
+		String token = tokenService.recoverToken(request);
 		boolean isValid = tokenService.isTokenValid(token);
 		if (isValid)
 			setAsAuthenticaded(token);
 		filterChain.doFilter(request, response);
-	}
-
-	private String recoverToken(HttpServletRequest request) {
-		String token = request.getHeader("Authorization");
-		if (token == null || token.isEmpty() || !token.startsWith("Bearer "))
-			return null;
-		return token.substring(7, token.length());
 	}
 
 	protected abstract void setAsAuthenticaded(String token);
