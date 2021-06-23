@@ -30,6 +30,8 @@ import com.fcamara.minhaVaga.model.CarPark;
 import com.fcamara.minhaVaga.model.Vacancy;
 import com.fcamara.minhaVaga.service.CarParkService;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 @RestController
 @RequestMapping("/carpark")
 public class CarParksController {
@@ -41,12 +43,14 @@ public class CarParksController {
 	TokenService tokenService;
 
 	@GetMapping("/{id}")
+	@Operation(summary = "Retorna as informações de um estacionamento.")
 	public ResponseEntity<CarParkDtoResponse> listOneCarParks(@PathVariable Long id) {
 		CarPark carPark = carParkService.findOneCarPark(id);
 		return ResponseEntity.ok(new CarParkDtoResponse(carPark));
 	}
 
 	@PostMapping("/register")
+	@Operation(summary = "Registra um estacionamento.")
 	public ResponseEntity<CarParkDtoResponse> registerCarPark(@Valid @RequestBody CarParkDtoRequest carParkRequest,
 			UriComponentsBuilder uriBuilder) {
 		CarPark carParkToRegister = carParkRequest.convertToCarPark();
@@ -56,6 +60,7 @@ public class CarParksController {
 	};
 
 	@PostMapping("/register-adress")
+	@Operation(summary = "Registra um endereço para o estacionamento autenticado")
 	public ResponseEntity<CarParkDtoResponse> registerParkAdress(HttpServletRequest request,
 			@Valid @RequestBody CarParkAdressDtoRequest carParkAdressRequest, UriComponentsBuilder uriBuilder) {
 		Long id = tokenService.returnRequesterId(request);
@@ -65,6 +70,7 @@ public class CarParksController {
 	};
 
 	@PostMapping("/adress/{adressId}/register-vacancy")
+	@Operation(summary = "Registra vaga de um endereço pertencente ao estacionamento autenticado")
 	public ResponseEntity<Adress> registerAdressVacancy(HttpServletRequest request, @PathVariable Long adressId,
 			@Valid @RequestBody VacancyDtoRequest vacancyRequest, UriComponentsBuilder uriBuilder) {
 		Long carParkId = tokenService.returnRequesterId(request);
@@ -74,6 +80,7 @@ public class CarParksController {
 	}
 
 	@PutMapping("/adress/update-vacancy/{vacancyId}")
+	@Operation(summary = "Atualiza os dados de uma vaga")
 	public ResponseEntity<Vacancy> updateAdressVacancy(HttpServletRequest request, @PathVariable Long vacancyId,
 			@Valid @RequestBody VacancyDtoRequest vacancyRequest) {
 		Long carParkId = tokenService.returnRequesterId(request);
@@ -82,6 +89,7 @@ public class CarParksController {
 	}
 
 	@PutMapping("/update-email")
+	@Operation(summary = "Atualiza o e-mail do estacionamento autenticado")
 	public ResponseEntity<CarParkDtoResponse> updateEmail(HttpServletRequest request,
 			@Valid @RequestBody CarParkDtoEmailRequest carParkRequest) {
 		Long id = tokenService.returnRequesterId(request);
@@ -90,6 +98,7 @@ public class CarParksController {
 	};
 
 	@PutMapping("/update-password")
+	@Operation(summary = "Atualiza a senha do estacionamento autenticado")
 	public ResponseEntity<CarParkDtoResponse> updatePassword(HttpServletRequest request,
 			@Valid @RequestBody CarParkDtoPasswordRequest carParkRequest) {
 		Long id = tokenService.returnRequesterId(request);
@@ -98,6 +107,7 @@ public class CarParksController {
 	};
 
 	@PutMapping("/update-phone")
+	@Operation(summary = "Atualiza o telefone do estacionamento autenticado")
 	public ResponseEntity<CarParkDtoResponse> updatePhone(HttpServletRequest request,
 			@Valid @RequestBody CarParkDtoPhoneRequest carParkRequest) {
 		Long id = tokenService.returnRequesterId(request);
@@ -106,6 +116,7 @@ public class CarParksController {
 	};
 
 	@DeleteMapping("/adress/{adressId}/delete")
+	@Operation(summary = "Apaga um endereço do estacionamento autenticado")
 	public ResponseEntity<?> deleteAdress(HttpServletRequest request, @PathVariable Long adressId) {
 		Long carParkId = tokenService.returnRequesterId(request);
 		carParkService.deleteAdress(carParkId, adressId);
@@ -113,6 +124,7 @@ public class CarParksController {
 	}
 
 	@DeleteMapping("/adress/vacancy/{vacancyId}/delete")
+	@Operation(summary = "Apagar uma vaga de um endereço")
 	public ResponseEntity<?> deleteAdressVacancy(HttpServletRequest request, @PathVariable Long vacancyId) {
 		Long carParkId = tokenService.returnRequesterId(request);
 		carParkService.deleteAdressVacancy(carParkId, vacancyId);

@@ -19,6 +19,8 @@ import com.fcamara.minhaVaga.dto.response.CarParkUsageDtoResponse;
 import com.fcamara.minhaVaga.model.CarParkUsage;
 import com.fcamara.minhaVaga.service.CarParkUsageService;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 @RestController
 @RequestMapping("/user/on/{vacancyId}/vehicle/{vehicleId}")
 public class CarParkUsageController {
@@ -30,6 +32,7 @@ public class CarParkUsageController {
 	TokenService tokenService;
 
 	@PostMapping("/park")
+	@Operation(summary = "Registra a entrade de um carro em um estacionamento")
 	public ResponseEntity<CarParkUsage> parking(HttpServletRequest request, @PathVariable Long vacancyId, @PathVariable Long vehicleId,
 			@Valid @RequestBody CarParkUsageDtoRequest typeOfPayment) {		
 		Long carParkId = tokenService.returnRequesterId(request);
@@ -39,6 +42,7 @@ public class CarParkUsageController {
 	}
 
 	@PostMapping("/leave")
+	@Operation(summary = "Registra a saida de um carro de um estacionamento")
 	public ResponseEntity<CarParkUsageDtoResponse> leave(HttpServletRequest request, @PathVariable Long vehicleId) {
 		Long carParkId = tokenService.returnRequesterId(request);
 		CarParkUsage carParkUsage = carParkUsageService.leaveParking(carParkId, vehicleId);

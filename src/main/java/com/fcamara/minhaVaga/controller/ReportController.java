@@ -18,6 +18,8 @@ import com.fcamara.minhaVaga.dto.response.ReportDtoResponse;
 import com.fcamara.minhaVaga.service.CarParkUsageService;
 import com.fcamara.minhaVaga.util.TimeSpaces;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 @RestController
 @RequestMapping("/carpark/report")
 public class ReportController {
@@ -28,6 +30,7 @@ public class ReportController {
 	TokenService tokenService;
 
 	@GetMapping("/last-interval")
+	@Operation(summary = "Retorna o relatório da movimentação entre períodos predefinidos")
 	public ResponseEntity<?> reportLastChoosedInterval(HttpServletRequest request,
 			@RequestParam TimeSpaces interval) {
 		Long carParkId = tokenService.returnRequesterId(request);
@@ -36,6 +39,7 @@ public class ReportController {
 	}
 
 	@GetMapping("/custom-interval")
+	@Operation(summary = "Retorna o relatório da movimentação entre as datas selecionadas")
 	public ResponseEntity<?> reportCustomInterval(HttpServletRequest request,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime entranceTime,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime exitTime) {

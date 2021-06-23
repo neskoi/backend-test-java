@@ -20,6 +20,8 @@ import com.fcamara.minhaVaga.dto.response.CarParkUsageDtoResponse;
 import com.fcamara.minhaVaga.service.CarParkUsageService;
 import com.fcamara.minhaVaga.util.TimeSpaces;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 @RestController
 @RequestMapping("/carpark/usage-info")
 public class CarParkUsageListsController {
@@ -31,6 +33,7 @@ public class CarParkUsageListsController {
 	TokenService tokenService;
 	
 	@GetMapping("/between-choosed-dates")
+	@Operation(summary = "Retorna os registros entre as datas selecionadas")
 	public ResponseEntity<Page<CarParkUsageDtoResponse>> listWhoEnteredInLastCustomInterval(HttpServletRequest request,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime entranceTime,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime exitTime,
@@ -42,6 +45,7 @@ public class CarParkUsageListsController {
 	}
 
 	@GetMapping("/between-fixed-intervals")
+	@Operation(summary = "Retorna os registros entre invervalos predefinidos")
 	public ResponseEntity<Page<CarParkUsageDtoResponse>> listWhoEnteredInLastChoosedInterval(HttpServletRequest request,
 			@RequestParam TimeSpaces interval, @RequestParam(required = false) boolean leaves,
 			@PageableDefault(page = 0, size = 50) Pageable pageable) {

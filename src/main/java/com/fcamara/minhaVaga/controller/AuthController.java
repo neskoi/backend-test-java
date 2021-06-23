@@ -16,6 +16,8 @@ import com.fcamara.minhaVaga.config.security.TokenService;
 import com.fcamara.minhaVaga.dto.request.LoginFormDto;
 import com.fcamara.minhaVaga.dto.response.TokenDtoResponse;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 @RestController
 @RequestMapping
 public class AuthController {
@@ -31,6 +33,7 @@ public class AuthController {
 
 	//AuthenticationException
 	@PostMapping("/user/auth")
+	@Operation(summary = "Autentica um usuário.")
 	public ResponseEntity<TokenDtoResponse> userLogin(@Valid @RequestBody LoginFormDto loginForm) {
 		try {
 			Authentication auth = authUserManager.authenticate(loginForm.convertToAuthToken());
@@ -42,6 +45,7 @@ public class AuthController {
 	}
 	
 	@PostMapping("/carpark/auth")
+	@Operation(summary = "Autentica um estacionamento")
 	public ResponseEntity<?> carParkLogin(@Valid @RequestBody LoginFormDto loginForm) {
 		try {
 			Authentication auth = authCarParkManager.authenticate(loginForm.convertToAuthToken());	

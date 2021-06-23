@@ -28,6 +28,8 @@ import com.fcamara.minhaVaga.model.Vehicle;
 import com.fcamara.minhaVaga.service.UserService;
 import com.fcamara.minhaVaga.service.VehicleService;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 @RestController
 @RequestMapping("/user")
 public class UsersController {
@@ -42,6 +44,8 @@ public class UsersController {
 	TokenService tokenService;
 
 	@GetMapping("/info")
+	@Operation(summary = "Retorna informação do usuário autenticado")
+
 	public ResponseEntity<UserDtoResponse> findOneUser(HttpServletRequest request) {
 		Long userId = tokenService.returnRequesterId(request);
 		User user = userService.findOneUser(userId);
@@ -49,6 +53,7 @@ public class UsersController {
 	};
 	
 	@PostMapping("/register")
+	@Operation(summary = "Registra um usuário")
 	public ResponseEntity<UserDtoResponse> register(@Valid @RequestBody UserDtoRequest userRequest,
 			UriComponentsBuilder uriBuilder) {
 		User userToRegister = userRequest.convertToUser();
@@ -58,6 +63,7 @@ public class UsersController {
 	}
 
 	@PostMapping("/register-vehicle")
+	@Operation(summary = "Registra um veiculo do usuário autenticado")
 	public ResponseEntity<Vehicle> registerVehicle(HttpServletRequest request,
 			@Valid @RequestBody VehicleDtoRequest vehicleRequest, UriComponentsBuilder uriBuilder) {
 		Long userId = tokenService.returnRequesterId(request);
@@ -67,6 +73,7 @@ public class UsersController {
 	}
 
 	@PutMapping("/update-email")
+	@Operation(summary = "Atualiza o e-mail do usuário autenticado")
 	public ResponseEntity<UserDtoResponse> updateEmail(HttpServletRequest request,
 			@Valid @RequestBody UserDtoUpdateEmailRequest email) {
 		Long userId = tokenService.returnRequesterId(request);
@@ -75,6 +82,7 @@ public class UsersController {
 	}
 
 	@PutMapping("/update-password")
+	@Operation(summary = "Atualiza a senha do usuário autenticado")
 	public ResponseEntity<UserDtoResponse> updatePassword(HttpServletRequest request,
 			@Valid @RequestBody UserDtoUpdatePasswordRequest password) {
 		Long userId = tokenService.returnRequesterId(request);
@@ -83,6 +91,7 @@ public class UsersController {
 	}
 
 	@PutMapping("/vehicle/{vehicleId}/change-color/{colorId}")
+	@Operation(summary = "Atualiza cor de um veiculo do usuário autenticado")
 	public ResponseEntity<Vehicle> updateVehicleColor(HttpServletRequest request, @PathVariable Long vehicleId, @PathVariable Long colorId){
 		Long userId = tokenService.returnRequesterId(request);
 		Vehicle vehicle = vehicleService.changeVehicleColor(userId, vehicleId, colorId);
@@ -90,6 +99,7 @@ public class UsersController {
 	}
 	
 	@DeleteMapping("vehicle/{vehicleId}/delete")
+	@Operation(summary = "Apaga um veiculo do usuário autenticado")
 	public ResponseEntity<?> deleteVehicle(HttpServletRequest request, @PathVariable Long vehicleId){
 		Long userId = tokenService.returnRequesterId(request);
 		vehicleService.deleteVehicle(vehicleId, userId);

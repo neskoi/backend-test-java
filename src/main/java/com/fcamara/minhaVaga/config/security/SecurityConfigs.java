@@ -52,8 +52,9 @@ public class SecurityConfigs extends WebSecurityConfigurerAdapter {
 				.authorizeRequests()
 				.antMatchers(HttpMethod.POST, "/user/auth").permitAll()
 				.antMatchers(HttpMethod.POST, "/user/register").permitAll()
-				.anyRequest().hasAuthority("CAROWNER").and().csrf()
-				.disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+				.anyRequest().hasAuthority("CAROWNER")
+				.and().csrf().disable()
+				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and().addFilterBefore(new TokenAuthFilterUser(tokenService, userRepository), UsernamePasswordAuthenticationFilter.class);
 		}
 	}
@@ -88,7 +89,7 @@ public class SecurityConfigs extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.POST, "/carpark/auth").permitAll()
 				.antMatchers(HttpMethod.POST, "/carpark/register").permitAll()
 				.antMatchers(HttpMethod.GET, "/carpark/*").permitAll()
-				.anyRequest().hasAuthority("CARPARK")				
+				.anyRequest().hasAuthority("CARPARK")
 				.and().csrf().disable()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and().addFilterBefore(new TokenAuthFilterCarPark(tokenService, carParkRepository), UsernamePasswordAuthenticationFilter.class);
