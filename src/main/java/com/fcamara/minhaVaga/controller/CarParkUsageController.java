@@ -26,10 +26,10 @@ import io.swagger.v3.oas.annotations.Operation;
 public class CarParkUsageController {
 
 	@Autowired
-	CarParkUsageService carParkUsageService;
+	private CarParkUsageService carParkUsageService;
 	
 	@Autowired
-	TokenService tokenService;
+	private TokenService tokenService;
 
 	@PostMapping("/park")
 	@Operation(summary = "Registra a entrade de um carro em um estacionamento")

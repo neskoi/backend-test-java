@@ -4,13 +4,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.fcamara.minhaVaga.model.User;
-import com.fcamara.minhaVaga.repository.UsersRepository;
+import com.fcamara.minhaVaga.repository.UserRepository;
 
 public class TokenAuthFilterUser extends TokenAuthFilter {
 
-	private UsersRepository userRepository;
+	private UserRepository userRepository;
 	
-	public TokenAuthFilterUser(TokenService tokenService , UsersRepository userRepository) {
+	public TokenAuthFilterUser(TokenService tokenService , UserRepository userRepository) {
 		super(tokenService);
 		this.userRepository = userRepository;
 	}

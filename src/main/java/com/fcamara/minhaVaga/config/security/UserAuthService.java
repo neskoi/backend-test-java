@@ -9,13 +9,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.fcamara.minhaVaga.model.User;
-import com.fcamara.minhaVaga.repository.UsersRepository;
+import com.fcamara.minhaVaga.repository.UserRepository;
 
 @Service
 public class UserAuthService implements UserDetailsService {
 
 	@Autowired
-	UsersRepository usersRepository;
+	UserRepository usersRepository;
 	
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

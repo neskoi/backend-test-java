@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.fcamara.minhaVaga.model.Adress;
 
 @Repository
-public interface CarParkAdressRespository extends JpaRepository<Adress, Long> {
+public interface CarParkAdressRepository extends JpaRepository<Adress, Long> {
 
 }

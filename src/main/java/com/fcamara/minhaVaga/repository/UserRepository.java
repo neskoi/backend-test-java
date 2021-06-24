@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.fcamara.minhaVaga.model.User;
 
 @Repository
-public interface UsersRepository extends JpaRepository<User, Long>{
+public interface UserRepository extends JpaRepository<User, Long>{
 	public Optional<User> findByEmail(String email);
 
 	public User findByCpf(String cpf);

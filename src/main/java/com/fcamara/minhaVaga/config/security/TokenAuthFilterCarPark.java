@@ -4,13 +4,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.fcamara.minhaVaga.model.CarPark;
-import com.fcamara.minhaVaga.repository.CarParksRepository;
+import com.fcamara.minhaVaga.repository.CarParkRepository;
 
 public class TokenAuthFilterCarPark extends TokenAuthFilter {
 
-	private CarParksRepository carParkRepository;
+	private CarParkRepository carParkRepository;
 	
-	public TokenAuthFilterCarPark(TokenService tokenService , CarParksRepository carParkRepository) {
+	public TokenAuthFilterCarPark(TokenService tokenService , CarParkRepository carParkRepository) {
 		super(tokenService);
 		this.carParkRepository = carParkRepository;
 	}

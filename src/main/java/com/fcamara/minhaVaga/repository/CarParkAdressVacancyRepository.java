@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.fcamara.minhaVaga.model.Vacancy;
 
 @Repository
-public interface CarParkAdressVacancyRespository extends JpaRepository<Vacancy, Long> {
+public interface CarParkAdressVacancyRepository extends JpaRepository<Vacancy, Long> {
 
 }

@@ -14,16 +14,16 @@ import com.fcamara.minhaVaga.dto.request.UserDtoUpdateEmailRequest;
 import com.fcamara.minhaVaga.dto.request.UserDtoUpdatePasswordRequest;
 import com.fcamara.minhaVaga.exception.UserAlreadyExistsException;
 import com.fcamara.minhaVaga.model.User;
-import com.fcamara.minhaVaga.repository.UsersRepository;
+import com.fcamara.minhaVaga.repository.UserRepository;
 
 @Service
 public class UserService {
 
 	@Autowired
-	UsersRepository userRepository;
+	private UserRepository userRepository;
 
 	@Autowired
-	PasswordEncoder bcrypt;
+	private PasswordEncoder bcrypt;
 
 	public User findOneUser(Long id) {
 		Optional<User> searchedUser = userRepository.findById(id);

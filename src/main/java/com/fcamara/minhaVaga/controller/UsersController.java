@@ -41,7 +41,7 @@ public class UsersController {
 	private VehicleService vehicleService;
 	
 	@Autowired
-	TokenService tokenService;
+	private TokenService tokenService;
 
 	@GetMapping("/info")
 	@Operation(summary = "Retorna informação do usuário autenticado")

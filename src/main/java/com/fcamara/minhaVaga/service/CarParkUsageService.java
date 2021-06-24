@@ -15,11 +15,15 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.fcamara.minhaVaga.dto.response.CarParkUsageDtoResponse;
 import com.fcamara.minhaVaga.dto.response.ReportDtoResponse;
+import com.fcamara.minhaVaga.exception.CarNotFoundExecption;
+import com.fcamara.minhaVaga.exception.IncompatibleVacancyTypeException;
+import com.fcamara.minhaVaga.exception.NoMoreVacanciesException;
+import com.fcamara.minhaVaga.exception.VehicleAlreadyParkedException;
 import com.fcamara.minhaVaga.model.CarParkUsage;
 import com.fcamara.minhaVaga.model.TypeOfPayment;
 import com.fcamara.minhaVaga.model.Vacancy;
 import com.fcamara.minhaVaga.model.Vehicle;
-import com.fcamara.minhaVaga.repository.CarParkAdressVacancyRespository;
+import com.fcamara.minhaVaga.repository.CarParkAdressVacancyRepository;
 import com.fcamara.minhaVaga.repository.CarParkUsageRepository;
 import com.fcamara.minhaVaga.repository.VehicleRepository;
 import com.fcamara.minhaVaga.util.ChronoMath;
@@ -27,31 +31,38 @@ import com.fcamara.minhaVaga.util.TimeSpaces;
 
 @Service
 public class CarParkUsageService {
-	@Autowired
-	CarParkUsageRepository carParkUsageRepository;
 
-	@Autowired
-	CarParkAdressVacancyRespository carParkAdressVacancyRepository;
+	private CarParkUsageRepository carParkUsageRepository;
 
+	private CarParkAdressVacancyRepository carParkAdressVacancyRepository;
+
+	private VehicleRepository vehicleRepository;
+	
 	@Autowired
-	VehicleRepository vehicleRepository;
+	public CarParkUsageService(CarParkUsageRepository carParkUsageRepository,
+			CarParkAdressVacancyRepository carParkAdressVacancyRepository, VehicleRepository vehicleRepository) {
+		super();
+		this.carParkUsageRepository = carParkUsageRepository;
+		this.carParkAdressVacancyRepository = carParkAdressVacancyRepository;
+		this.vehicleRepository = vehicleRepository;
+	}
 
 	public CarParkUsage insertParking(Long userId, Long vacancyId, Long vehicleId, TypeOfPayment typeOfPayment) {
 		
 		Vehicle vehicle = this.findVehicleByIdAndUserId(vehicleId, userId);
 
 		if (this.checkIfVehicleIsAlreadyParked(vehicleId))
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Veiculo já estacionado.");
+			throw new VehicleAlreadyParkedException("Veiculo já estacionado.");
 
 		Vacancy vacancy = findVacancyById(vacancyId);
 
 		if (vacancy.getTypeOfVehicle() != vehicle.getModel().getTypeOfVehicle())
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Veiculo não compativel com o tipo de vaga.");
+			throw new IncompatibleVacancyTypeException("Veiculo não compativel com o tipo de vaga.");
 
 		int leftVacancies = howManyFreeVacanciesOneCarParkHave(vacancy);
 
 		if (leftVacancies <= 0) 
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "As vagas desse tipo estão lotadas.");
+			throw new NoMoreVacanciesException("As vagas desse tipo estão lotadas.");
 		
 		CarParkUsage carParkUsageToRegister = new CarParkUsage(vacancy, vehicle, typeOfPayment);
 		return carParkUsageRepository.save(carParkUsageToRegister);
@@ -64,7 +75,7 @@ public class CarParkUsageService {
 		
 		Optional<CarParkUsage> searchedCarParkUsage = carParkUsageRepository.findByVehicleIdAndExitTimeIsNull(vehicleId);
 		if (searchedCarParkUsage.isEmpty())
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Veiculo não localizado.");
+			throw new CarNotFoundExecption("Veiculo não localizado.");
 		
 		CarParkUsage carParkUsage = searchedCarParkUsage.get();		
 		
@@ -80,10 +91,8 @@ public class CarParkUsageService {
 
 		Page<CarParkUsage> carParkUsages;
 		if (leaves) {
-			System.out.println("saidas");
 			carParkUsages = carParkUsageRepository.allLeavesBetweenDates(carParkId, entranceTime, exitTime, pageable);
 		} else {
-			System.out.println("entradas");
 			carParkUsages = carParkUsageRepository.allEntrancesBetweenDates(carParkId, entranceTime, exitTime,
 					pageable);
 		}

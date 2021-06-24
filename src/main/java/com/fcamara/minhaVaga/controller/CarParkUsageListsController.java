@@ -27,10 +27,10 @@ import io.swagger.v3.oas.annotations.Operation;
 public class CarParkUsageListsController {
 
 	@Autowired
-	CarParkUsageService carParkUsageService;
+	private CarParkUsageService carParkUsageService;
 
 	@Autowired
-	TokenService tokenService;
+	private TokenService tokenService;
 	
 	@GetMapping("/between-choosed-dates")
 	@Operation(summary = "Retorna os registros entre as datas selecionadas")

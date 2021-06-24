@@ -8,9 +8,9 @@ import org.springframework.stereotype.Repository;
 import com.fcamara.minhaVaga.model.CarPark;
 
 @Repository
-public interface CarParksRepository extends JpaRepository<CarPark, Long> {
+public interface CarParkRepository extends JpaRepository<CarPark, Long> {
 	
-	public CarPark findByCnpj(String cnpj);
+	public Optional<CarPark> findByCnpj(String cnpj);
 	public Optional<CarPark> findByEmail(String email);
 
 }

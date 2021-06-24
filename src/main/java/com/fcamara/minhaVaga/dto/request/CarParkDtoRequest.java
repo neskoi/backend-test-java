@@ -31,6 +31,7 @@ public class CarParkDtoRequest {
 	@Email(message = "É preciso informar um email valido.")
 	private String email;
 
+	@NotBlank(message = "É preciso informar um telefone.")
 	@Pattern(regexp = "[\\d]{10,11}", message = "O telefone deve conter apenas números")
 	private String phone;
 

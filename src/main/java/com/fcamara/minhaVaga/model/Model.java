@@ -10,11 +10,20 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
+@NoArgsConstructor
 public class Model {
 	
+	public Model(String model, Brand brand, TypeOfVehicle typeOfVehicle) {
+		super();
+		this.model = model;
+		this.brand = brand;
+		this.typeOfVehicle = typeOfVehicle;
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

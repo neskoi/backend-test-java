@@ -17,23 +17,23 @@ import com.fcamara.minhaVaga.model.User;
 import com.fcamara.minhaVaga.model.Vehicle;
 import com.fcamara.minhaVaga.repository.ColorRepository;
 import com.fcamara.minhaVaga.repository.ModelRepository;
-import com.fcamara.minhaVaga.repository.UsersRepository;
+import com.fcamara.minhaVaga.repository.UserRepository;
 import com.fcamara.minhaVaga.repository.VehicleRepository;
 
 @Service
 public class VehicleService {
 
 	@Autowired
-	UsersRepository userRepository;
+	private UserRepository userRepository;
 
 	@Autowired
-	VehicleRepository vehicleRepository;
+	private VehicleRepository vehicleRepository;
 
 	@Autowired
-	ColorRepository colorRepository;
+	private ColorRepository colorRepository;
 
 	@Autowired
-	ModelRepository modelRepository;
+	private ModelRepository modelRepository;
 
 	public Vehicle findOneVehicle(Long id) {
 		Optional<Vehicle> searchedVehicle = vehicleRepository.findById(id);
@@ -71,7 +71,6 @@ public class VehicleService {
 		return vehicle;
 	}
 
-	
 	public void deleteVehicle(Long vehicleId, Long userId) {
 		this.findVehicle(vehicleId, userId);
 		vehicleRepository.deleteById(vehicleId);

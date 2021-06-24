@@ -16,8 +16,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.fcamara.minhaVaga.repository.CarParksRepository;
-import com.fcamara.minhaVaga.repository.UsersRepository;
+import com.fcamara.minhaVaga.repository.CarParkRepository;
+import com.fcamara.minhaVaga.repository.UserRepository;
 
 @EnableWebSecurity
 @Configuration
@@ -30,7 +30,7 @@ public class SecurityConfigs extends WebSecurityConfigurerAdapter {
 		private UserAuthService userAuthService;
 		
 		@Autowired
-		private UsersRepository userRepository;
+		private UserRepository userRepository;
 		
 		@Autowired
 		private TokenService tokenService;
@@ -66,7 +66,7 @@ public class SecurityConfigs extends WebSecurityConfigurerAdapter {
 		private CarParkAuthService carParkAuthService;
 		
 		@Autowired
-		private CarParksRepository carParkRepository;
+		private CarParkRepository carParkRepository;
 		
 		@Autowired
 		private TokenService tokenService;

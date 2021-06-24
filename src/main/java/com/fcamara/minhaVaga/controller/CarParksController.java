@@ -37,10 +37,10 @@ import io.swagger.v3.oas.annotations.Operation;
 public class CarParksController {
 
 	@Autowired
-	CarParkService carParkService;
+	private CarParkService carParkService;
 	
 	@Autowired
-	TokenService tokenService;
+	private TokenService tokenService;
 
 	@GetMapping("/{id}")
 	@Operation(summary = "Retorna as informações de um estacionamento.")

@@ -20,24 +20,30 @@ import com.fcamara.minhaVaga.exception.UserAlreadyExistsException;
 import com.fcamara.minhaVaga.model.Adress;
 import com.fcamara.minhaVaga.model.CarPark;
 import com.fcamara.minhaVaga.model.Vacancy;
-import com.fcamara.minhaVaga.repository.CarParkAdressRespository;
-import com.fcamara.minhaVaga.repository.CarParkAdressVacancyRespository;
-import com.fcamara.minhaVaga.repository.CarParksRepository;
+import com.fcamara.minhaVaga.repository.CarParkAdressRepository;
+import com.fcamara.minhaVaga.repository.CarParkAdressVacancyRepository;
+import com.fcamara.minhaVaga.repository.CarParkRepository;
 
 @Service
 public class CarParkService {
 
-	@Autowired
-	CarParksRepository carParkRepository;
+	private CarParkRepository carParkRepository;
+
+	private CarParkAdressRepository carParkAdressRepository;
+
+	private CarParkAdressVacancyRepository carParkAdressVacancyRepository;
+
+	private PasswordEncoder bcrypt;
 
 	@Autowired
-	CarParkAdressRespository carParkAdressRepository;
-
-	@Autowired
-	CarParkAdressVacancyRespository carParkAdressVacancyRepository;
-
-	@Autowired
-	PasswordEncoder bcrypt;
+	public CarParkService(CarParkRepository carParkRepository, CarParkAdressRepository carParkAdressRepository,
+			CarParkAdressVacancyRepository carParkAdressVacancyRepository, PasswordEncoder bcrypt) {
+		super();
+		this.carParkRepository = carParkRepository;
+		this.carParkAdressRepository = carParkAdressRepository;
+		this.carParkAdressVacancyRepository = carParkAdressVacancyRepository;
+		this.bcrypt = bcrypt;
+	}
 
 	public CarPark findOneCarPark(Long id) {
 		Optional<CarPark> searchedCarPark = carParkRepository.findById(id);
@@ -125,7 +131,6 @@ public class CarParkService {
 			carPark.setPhone(carParkRequest.getPhone());
 			return carPark;
 		}
-
 		return null;
 	}
 
@@ -162,8 +167,8 @@ public class CarParkService {
 	private boolean isCnpjRegistered(String cnpj) {
 
 		try {
-			CarPark cnpjRegistered = carParkRepository.findByCnpj(cnpj);
-			if (cnpjRegistered != null)
+			Optional<CarPark> cnpjRegistered = carParkRepository.findByCnpj(cnpj);
+			if (cnpjRegistered.isPresent())
 				return true;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());

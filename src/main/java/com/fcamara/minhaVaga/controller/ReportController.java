@@ -24,10 +24,10 @@ import io.swagger.v3.oas.annotations.Operation;
 @RequestMapping("/carpark/report")
 public class ReportController {
 	@Autowired
-	CarParkUsageService carParkUsageService;
+	private CarParkUsageService carParkUsageService;
 
 	@Autowired
-	TokenService tokenService;
+	private TokenService tokenService;
 
 	@GetMapping("/last-interval")
 	@Operation(summary = "Retorna o relatório da movimentação entre períodos predefinidos")

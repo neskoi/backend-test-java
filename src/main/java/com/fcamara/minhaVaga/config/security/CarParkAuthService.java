@@ -9,13 +9,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.fcamara.minhaVaga.model.CarPark;
-import com.fcamara.minhaVaga.repository.CarParksRepository;
+import com.fcamara.minhaVaga.repository.CarParkRepository;
 
 @Service
 public class CarParkAuthService  implements UserDetailsService {
 
 	@Autowired
-	CarParksRepository carParksRepository;
+	CarParkRepository carParksRepository;
 	
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

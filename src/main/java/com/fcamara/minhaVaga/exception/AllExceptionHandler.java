@@ -57,6 +57,31 @@ public class AllExceptionHandler {
     }
 	
 	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(VehicleAlreadyParkedException.class)
+    public ResponseEntity<?> handleVehicleAlreadyParkedException(VehicleAlreadyParkedException exception) {
+		return ResponseEntity.ok(exception.getMessage());
+    }
+	
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IncompatibleVacancyTypeException.class)
+    public ResponseEntity<?> handleIncompatibleVacancyTypeException(IncompatibleVacancyTypeException exception) {
+		return ResponseEntity.ok(exception.getMessage());
+    }
+	
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(NoMoreVacanciesException.class)
+    public ResponseEntity<?> handleNoMoreVacanciesException(NoMoreVacanciesException exception) {
+		return ResponseEntity.ok(exception.getMessage());
+    }
+	
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(CarNotFoundExecption.class)
+    public ResponseEntity<?> handleCarNotFoundExecption(CarNotFoundExecption exception) {
+		return ResponseEntity.ok(exception.getMessage());
+    }
+	
+	
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<?> ResponseStatusException(ResponseStatusException exception) {
 		return ResponseEntity.ok(exception.getMessage());
