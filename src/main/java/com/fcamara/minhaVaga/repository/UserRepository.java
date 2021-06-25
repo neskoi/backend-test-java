@@ -11,5 +11,5 @@ import com.fcamara.minhaVaga.model.User;
 public interface UserRepository extends JpaRepository<User, Long>{
 	public Optional<User> findByEmail(String email);
 
-	public User findByCpf(String cpf);
+	public Optional<User> findByCpf(String cpf);
 }

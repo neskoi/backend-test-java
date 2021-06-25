@@ -19,11 +19,16 @@ import com.fcamara.minhaVaga.repository.UserRepository;
 @Service
 public class UserService {
 
-	@Autowired
 	private UserRepository userRepository;
 
-	@Autowired
 	private PasswordEncoder bcrypt;
+	
+	@Autowired
+	public UserService(UserRepository userRepository, PasswordEncoder bcrypt) {
+		super();
+		this.userRepository = userRepository;
+		this.bcrypt = bcrypt;
+	}
 
 	public User findOneUser(Long id) {
 		Optional<User> searchedUser = userRepository.findById(id);
@@ -83,7 +88,7 @@ public class UserService {
 
 	private boolean isCpfAlreadyRegistered(String cpf) {
 		try {
-			User cpfRegistered = userRepository.findByCpf(cpf);
+			Optional<User> cpfRegistered = userRepository.findByCpf(cpf);
 			if (cpfRegistered != null)
 				return true;
 		} catch (Exception e) {
