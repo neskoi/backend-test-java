@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.fcamara.minhaVaga.dto.request.VehicleDtoRequest;
+import com.fcamara.minhaVaga.exception.ColorIdInvalidException;
+import com.fcamara.minhaVaga.exception.InvalidUserException;
+import com.fcamara.minhaVaga.exception.ModelIdInvalidException;
+import com.fcamara.minhaVaga.exception.PlateAlredyRegisteredException;
 import com.fcamara.minhaVaga.model.Color;
 import com.fcamara.minhaVaga.model.Model;
 import com.fcamara.minhaVaga.model.User;
@@ -23,18 +27,24 @@ import com.fcamara.minhaVaga.repository.VehicleRepository;
 @Service
 public class VehicleService {
 
-	@Autowired
 	private UserRepository userRepository;
 
-	@Autowired
 	private VehicleRepository vehicleRepository;
 
-	@Autowired
 	private ColorRepository colorRepository;
 
-	@Autowired
 	private ModelRepository modelRepository;
 
+	@Autowired
+	public VehicleService(UserRepository userRepository, VehicleRepository vehicleRepository,
+			ColorRepository colorRepository, ModelRepository modelRepository) {
+		super();
+		this.userRepository = userRepository;
+		this.vehicleRepository = vehicleRepository;
+		this.colorRepository = colorRepository;
+		this.modelRepository = modelRepository;
+	}
+	
 	public Vehicle findOneVehicle(Long id) {
 		Optional<Vehicle> searchedVehicle = vehicleRepository.findById(id);
 		if (searchedVehicle.isEmpty())
@@ -43,30 +53,25 @@ public class VehicleService {
 	}
 
 	public Vehicle registerVehicle(Long userId, @Valid VehicleDtoRequest vehicleRequest) {
-		Optional<Vehicle> searchedVehicle = vehicleRepository.findByPlate(vehicleRequest.getPlate());
-		if (searchedVehicle.isPresent())
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Placa já registrada.");
-		Optional<User> searchedUser = userRepository.findById(userId);
-		if (searchedUser.isEmpty())
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id invalido.");
-		Optional<Color> searchedColor = colorRepository.findById(vehicleRequest.getColorId());
-		Optional<Model> searchedModel = modelRepository.findById(vehicleRequest.getModelId());
-		if (searchedColor.isEmpty())
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cor invalida.");
-		if (searchedModel.isEmpty())
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Modelo invalido.");
-
-		Vehicle vehicleToRegister = vehicleRequest.convertToVehicle(searchedUser.get(), searchedColor.get(),
-				searchedModel.get());
+		
+		IfFindVehicleByPlateThrowsException(vehicleRequest.getPlate());
+		
+		User searchedUser = findUser(userId);		
+		Color searchedColor = findColor(vehicleRequest.getColorId());
+		Model searchedModel = findModel(vehicleRequest.getModelId());
+		
+		Vehicle vehicleToRegister = vehicleRequest.convertToVehicle(searchedUser, searchedColor,
+				searchedModel);
 
 		return vehicleRepository.save(vehicleToRegister);
 
 	}
+	
 
 	@Transactional
 	public Vehicle changeVehicleColor(Long userId, Long vehicleId, Long colorId) {
-		Vehicle vehicle = this.findVehicle(vehicleId, userId);
-		Color color = this.findColor(colorId);
+		Vehicle vehicle = findVehicle(vehicleId, userId);
+		Color color =  findColor(colorId);
 		vehicle.setColor(color);
 		return vehicle;
 	}
@@ -74,6 +79,19 @@ public class VehicleService {
 	public void deleteVehicle(Long vehicleId, Long userId) {
 		this.findVehicle(vehicleId, userId);
 		vehicleRepository.deleteById(vehicleId);
+	}
+	
+	private User findUser(Long userId) {
+		Optional<User> searchedUser = userRepository.findById(userId);
+		if (searchedUser.isEmpty())
+			throw new InvalidUserException("Id invalido.");
+		return searchedUser.get();
+	}
+	
+	private void IfFindVehicleByPlateThrowsException(String plate) {
+		Optional<Vehicle> searchedVehicle = vehicleRepository.findByPlate(plate);
+		if (searchedVehicle.isPresent()) {
+			throw new PlateAlredyRegisteredException("Placa já registrada.");};
 	}
 
 	private Vehicle findVehicle(Long vehicleId, Long userId) {
@@ -86,7 +104,14 @@ public class VehicleService {
 	private Color findColor(Long colorId) {
 		Optional<Color> searchedColor = colorRepository.findById(colorId);
 		if (searchedColor.isEmpty())
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id de cor invalido.");
+			throw new ColorIdInvalidException( "Id de cor invalido.");
 		return searchedColor.get();
+	}
+	
+	private Model findModel(Long modelId) {
+		Optional<Model> searchedModel = modelRepository.findById(modelId);
+		if (searchedModel.isEmpty())
+			throw new ModelIdInvalidException("Modelo invalido.");
+		return searchedModel.get();
 	}
 }

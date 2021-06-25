@@ -80,6 +80,29 @@ public class AllExceptionHandler {
 		return ResponseEntity.ok(exception.getMessage());
     }
 	
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(PlateAlredyRegisteredException.class)
+    public ResponseEntity<?> handlePlateAlredyRegisteredException(PlateAlredyRegisteredException exception) {
+		return ResponseEntity.ok(exception.getMessage());
+    }
+	
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidUserException.class)
+    public ResponseEntity<?> handleInvalidUserException(InvalidUserException exception) {
+		return ResponseEntity.ok(exception.getMessage());
+    }
+	
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ModelIdInvalidException.class)
+    public ResponseEntity<?> handleModelIdInvalidException(ModelIdInvalidException exception) {
+		return ResponseEntity.ok(exception.getMessage());
+    }
+	
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ColorIdInvalidException.class)
+    public ResponseEntity<?> handleColorIdInvalidException(ColorIdInvalidException exception) {
+		return ResponseEntity.ok(exception.getMessage());
+    }
 	
 	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ResponseStatusException.class)
