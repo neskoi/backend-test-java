@@ -37,7 +37,7 @@ public class CarParkUsageService {
 	private CarParkAdressVacancyRepository carParkAdressVacancyRepository;
 
 	private VehicleRepository vehicleRepository;
-	
+
 	@Autowired
 	public CarParkUsageService(CarParkUsageRepository carParkUsageRepository,
 			CarParkAdressVacancyRepository carParkAdressVacancyRepository, VehicleRepository vehicleRepository) {
@@ -47,11 +47,12 @@ public class CarParkUsageService {
 		this.vehicleRepository = vehicleRepository;
 	}
 
+	// TODO diminuir esse bife. Como?
 	public CarParkUsage insertParking(Long userId, Long vacancyId, Long vehicleId, TypeOfPayment typeOfPayment) {
-		
-		Vehicle vehicle = this.findVehicleByIdAndUserId(vehicleId, userId);
 
-		if (this.checkIfVehicleIsAlreadyParked(vehicleId))
+		Vehicle vehicle = findVehicleByIdAndUserId(vehicleId, userId);
+
+		if (checkIfVehicleIsAlreadyParked(vehicleId))
 			throw new VehicleAlreadyParkedException("Veiculo já estacionado.");
 
 		Vacancy vacancy = findVacancyById(vacancyId);
@@ -59,26 +60,19 @@ public class CarParkUsageService {
 		if (vacancy.getTypeOfVehicle() != vehicle.getModel().getTypeOfVehicle())
 			throw new IncompatibleVacancyTypeException("Veiculo não compativel com o tipo de vaga.");
 
-		int leftVacancies = howManyFreeVacanciesOneCarParkHave(vacancy);
+		Long leftVacancies = howManyFreeVacanciesOneCarParkHave(vacancy);
 
-		if (leftVacancies <= 0) 
+		if (leftVacancies <= 0)
 			throw new NoMoreVacanciesException("As vagas desse tipo estão lotadas.");
-		
+
 		CarParkUsage carParkUsageToRegister = new CarParkUsage(vacancy, vehicle, typeOfPayment);
 		return carParkUsageRepository.save(carParkUsageToRegister);
 	}
 
 	@Transactional
 	public CarParkUsage leaveParking(Long userId, Long vehicleId) {
-		
-		this.findVehicleByIdAndUserId(vehicleId, userId);
-		
-		Optional<CarParkUsage> searchedCarParkUsage = carParkUsageRepository.findByVehicleIdAndExitTimeIsNull(vehicleId);
-		if (searchedCarParkUsage.isEmpty())
-			throw new CarNotFoundExecption("Veiculo não localizado.");
-		
-		CarParkUsage carParkUsage = searchedCarParkUsage.get();		
-		
+		findVehicleByIdAndUserId(vehicleId, userId);
+		CarParkUsage carParkUsage = findCarParkUsageByVehicleIdAndExitTimeIsNull(vehicleId);
 		carParkUsage.exit();
 		return carParkUsage;
 	}
@@ -132,7 +126,15 @@ public class CarParkUsageService {
 				.findByVehicleIdAndExitTimeIsNull(vehicleId);
 		return searchedCarParkUsage.isPresent();
 	}
-	
+
+	private CarParkUsage findCarParkUsageByVehicleIdAndExitTimeIsNull(Long vehicleId) {
+		Optional<CarParkUsage> searchedCarParkUsage = carParkUsageRepository
+				.findByVehicleIdAndExitTimeIsNull(vehicleId);
+		if (searchedCarParkUsage.isPresent())
+			return searchedCarParkUsage.get();
+		throw new CarNotFoundExecption("Veiculo não localizado.");
+	}
+
 	private Vacancy findVacancyById(Long vacancyId) {
 		Optional<Vacancy> searchedVacancy = carParkAdressVacancyRepository.findById(vacancyId);
 		if (searchedVacancy.isEmpty())
@@ -147,11 +149,9 @@ public class CarParkUsageService {
 		return searchedVehicle.get();
 	}
 
-	private int howManyFreeVacanciesOneCarParkHave(Vacancy vacancy) {
-		// TODO reduzir trafego da query - DB deve devolver apenas o numero de rows e
-		// não todas elas para contar aqui.
-		List<CarParkUsage> inUseVacancies = carParkUsageRepository.findByVacancyIdAndExitTimeIsNull(vacancy.getId());
-		return vacancy.getAmount() - inUseVacancies.size();
+	private Long howManyFreeVacanciesOneCarParkHave(Vacancy vacancy) {
+		Long inUseVacancies = carParkUsageRepository.countByVacancyIdAndExitTimeIsNull(vacancy.getId());
+		return vacancy.getAmount() - inUseVacancies;
 	}
 
 }

@@ -22,7 +22,7 @@ public class UserService {
 	private UserRepository userRepository;
 
 	private PasswordEncoder bcrypt;
-	
+
 	@Autowired
 	public UserService(UserRepository userRepository, PasswordEncoder bcrypt) {
 		super();
@@ -46,27 +46,19 @@ public class UserService {
 
 	@Transactional
 	public User updateEmail(Long id, UserDtoUpdateEmailRequest email) {
-		Optional<User> checkUser = userRepository.findById(id);
-		if (checkUser.isPresent()) {
-			User user = checkUser.get();
-			if (isEmailAlreadyRegistered(email.getEmail()))
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email indisponivel");
-			user.setEmail(email.getEmail());
-			return user;
-		}
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID invalido.");
+		User user = findOneUser(id);
+		if (isEmailAlreadyRegistered(email.getEmail()))
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email indisponivel");
+		user.setEmail(email.getEmail());
+		return user;
 	}
 
 	@Transactional
 	public User updatePassword(Long id, UserDtoUpdatePasswordRequest password) {
-		Optional<User> checkUser = userRepository.findById(id);
-		if (checkUser.isPresent()) {
-			User user = checkUser.get();
-			user.setPassword(password.getPassword());
-			encodePassword(user);
-			return user;
-		}
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID invalido.");
+		User user = findOneUser(id);
+		user.setPassword(password.getPassword());
+		encodePassword(user);
+		return user;
 	}
 
 	private void encodePassword(User user) {
@@ -74,40 +66,22 @@ public class UserService {
 	}
 
 	private boolean isEmailAlreadyRegistered(String email) {
-		try {
-			Optional<User> emailRegistered = userRepository.findByEmail(email);
-			if (emailRegistered.isPresent())
-				return true;
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-					"Um erro inexperado ocorreu, tente novamente mais tarde.");
-		}
+		Optional<User> emailRegistered = userRepository.findByEmail(email);
+		if (emailRegistered.isPresent())
+			return true;
 		return false;
 	}
 
 	private boolean isCpfAlreadyRegistered(String cpf) {
-		try {
-			Optional<User> cpfRegistered = userRepository.findByCpf(cpf);
-			if (cpfRegistered != null)
-				return true;
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-					"Um erro inexperado ocorreu, tente novamente mais tarde.");
-		}
+		Optional<User> cpfRegistered = userRepository.findByCpf(cpf);
+		if (cpfRegistered != null)
+			return true;
 		return false;
 	}
 
 	private User insertUser(User user) {
-		try {
-			userRepository.save(user);
-			return user;
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-					"Um erro inexperado ocorreu, tente novamente mais tarde.");
-		}
+		userRepository.save(user);
+		return user;
 	}
 
 }

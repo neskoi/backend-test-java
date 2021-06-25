@@ -30,6 +30,8 @@ public interface CarParkUsageRepository extends JpaRepository<CarParkUsage, Long
 	
 	public List<CarParkUsage> findByVacancyIdAndExitTimeIsNull(Long id);
 
+	public Long countByVacancyIdAndExitTimeIsNull(Long id);
+	
 	public Optional<CarParkUsage> findByVehicleIdAndExitTimeIsNull(Long vehicleId);
 	
 	@Query(value = entranceBetweenDatesQuery, nativeQuery = true)
