@@ -2,6 +2,7 @@ package com.fcamara.minhaVaga.service;
 
 import java.util.Optional;
 
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,20 +14,24 @@ import org.springframework.web.server.ResponseStatusException;
 import com.fcamara.minhaVaga.dto.request.UserDtoUpdateEmailRequest;
 import com.fcamara.minhaVaga.dto.request.UserDtoUpdatePasswordRequest;
 import com.fcamara.minhaVaga.exception.UserAlreadyExistsException;
+import com.fcamara.minhaVaga.model.Role;
 import com.fcamara.minhaVaga.model.User;
+import com.fcamara.minhaVaga.repository.RoleRepository;
 import com.fcamara.minhaVaga.repository.UserRepository;
 
 @Service
 public class UserService {
 
 	private UserRepository userRepository;
+	
+	private RoleRepository roleRepository;
 
 	private PasswordEncoder bcrypt;
 
 	@Autowired
-	public UserService(UserRepository userRepository, PasswordEncoder bcrypt) {
-		super();
+	public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder bcrypt) {
 		this.userRepository = userRepository;
+		this.roleRepository = roleRepository;
 		this.bcrypt = bcrypt;
 	}
 
@@ -41,6 +46,7 @@ public class UserService {
 		if (isCpfAlreadyRegistered(user.getCpf()) || isEmailAlreadyRegistered(user.getEmail()))
 			throw new UserAlreadyExistsException("Usuario já cadastrado.");
 		encodePassword(user);
+		user.getRoles().add(findRoleByName("CAROWNER"));
 		return insertUser(user);
 	}
 
@@ -65,6 +71,13 @@ public class UserService {
 		user.setPassword(bcrypt.encode(user.getPassword()));
 	}
 
+	private Role findRoleByName(String name) {
+		Optional<Role> role = roleRepository.findByName(name);
+		if(role.isPresent())
+			return role.get();
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalida");		
+	} 
+	
 	private boolean isEmailAlreadyRegistered(String email) {
 		Optional<User> emailRegistered = userRepository.findByEmail(email);
 		if (emailRegistered.isPresent())

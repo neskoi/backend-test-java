@@ -14,10 +14,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 
+import static org.mockito.ArgumentMatchers.*;
+
 import com.fcamara.minhaVaga.model.CarPark;
+import com.fcamara.minhaVaga.model.Role;
 import com.fcamara.minhaVaga.repository.CarParkAdressRepository;
 import com.fcamara.minhaVaga.repository.CarParkAdressVacancyRepository;
 import com.fcamara.minhaVaga.repository.CarParkRepository;
+import com.fcamara.minhaVaga.repository.RoleRepository;
 import com.fcamara.minhaVaga.dto.request.CarParkDtoEmailRequest;
 import com.fcamara.minhaVaga.dto.request.CarParkDtoPasswordRequest;
 import com.fcamara.minhaVaga.dto.request.CarParkDtoPhoneRequest;
@@ -33,6 +37,10 @@ public class CarParkServiceTest {
 
 	@Mock
 	private CarParkAdressVacancyRepository carParkAdressVacancyRepository;
+	
+	@Mock
+	private RoleRepository roleRepository;
+
 
 	// @Autowired nao funcionou e ficou retornado null, nao entendi o motivo
 	private PasswordEncoder bcrypt;
@@ -44,7 +52,7 @@ public class CarParkServiceTest {
 		MockitoAnnotations.openMocks(this);
 		this.bcrypt = new BCryptPasswordEncoder();
 		this.carParkService = new CarParkService(carParkRepository, carParkAdressRepository,
-				carParkAdressVacancyRepository, bcrypt);
+				carParkAdressVacancyRepository, roleRepository, bcrypt);
 	}
 
 	@Test
@@ -81,6 +89,7 @@ public class CarParkServiceTest {
 				.thenReturn(repoCarParkFindCnpjMockBehavior(carPark.getCnpj()));
 		Mockito.when(carParkRepository.findByEmail(carPark.getEmail()))
 				.thenReturn(repoCarParkFindEmailMockBehavior(carPark.getEmail()));
+		Mockito.when(roleRepository.findByName(any())).thenReturn(repoRoleFindByNameMockBehavior("CARPARK"));
 		Mockito.when(carParkRepository.save(carPark)).thenReturn(repoCarParkSaveMockBehavior(carPark));
 		CarPark savedCarPark = carParkService.register(carPark);
 		Assertions.assertTrue(savedCarPark instanceof CarPark);
@@ -139,7 +148,7 @@ public class CarParkServiceTest {
 	}
 
 	private Optional<CarPark> repoCarParkFindOneMockBehavior(Long carParkId) {
-		List<CarPark> carParks = CarParkList();
+		List<CarPark> carParks = carParkList();
 		for (CarPark cp : carParks) {
 			if (cp.getId() == carParkId)
 				return Optional.of(cp);
@@ -148,7 +157,7 @@ public class CarParkServiceTest {
 	}
 
 	private Optional<CarPark> repoCarParkFindCnpjMockBehavior(String cnpj) {
-		List<CarPark> carParks = CarParkList();
+		List<CarPark> carParks = carParkList();
 		for (CarPark cp : carParks) {
 			if (cp.getCnpj() == cnpj)
 				return Optional.of(cp);
@@ -157,7 +166,7 @@ public class CarParkServiceTest {
 	}
 
 	private Optional<CarPark> repoCarParkFindEmailMockBehavior(String email) {
-		List<CarPark> carParks = CarParkList();
+		List<CarPark> carParks = carParkList();
 		for (CarPark cp : carParks) {
 			if (cp.getEmail() == email)
 				return Optional.of(cp);
@@ -165,7 +174,17 @@ public class CarParkServiceTest {
 		return Optional.empty();
 	}
 
-	private List<CarPark> CarParkList() {
+	private Optional<Role> repoRoleFindByNameMockBehavior(String name){
+		List<Role> roles = fakeRolesDB();
+		
+		for(Role r : roles) {
+			if(r.getName() == name)
+				return Optional.of(r);
+		}
+		return Optional.empty();
+	}
+	
+	private List<CarPark> carParkList() {
 		List<CarPark> carParks = new ArrayList<>();
 		CarPark cp1 = new CarPark("Estacionamento 01", "123456789", "31477931000109", "estacionameto01@com.com",
 				"40028922");
@@ -177,5 +196,11 @@ public class CarParkServiceTest {
 		carParks.add(cp2);
 		return carParks;
 	}
-
+	
+	private List<Role> fakeRolesDB(){
+		List<Role> roles = new ArrayList<>();
+		roles.add(new Role("CARPARK"));
+		roles.add(new Role("CAROWNER"));
+		return roles;
+	}
 }

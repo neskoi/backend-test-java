@@ -19,10 +19,12 @@ import com.fcamara.minhaVaga.dto.request.VacancyDtoRequest;
 import com.fcamara.minhaVaga.exception.UserAlreadyExistsException;
 import com.fcamara.minhaVaga.model.Adress;
 import com.fcamara.minhaVaga.model.CarPark;
+import com.fcamara.minhaVaga.model.Role;
 import com.fcamara.minhaVaga.model.Vacancy;
 import com.fcamara.minhaVaga.repository.CarParkAdressRepository;
 import com.fcamara.minhaVaga.repository.CarParkAdressVacancyRepository;
 import com.fcamara.minhaVaga.repository.CarParkRepository;
+import com.fcamara.minhaVaga.repository.RoleRepository;
 
 @Service
 public class CarParkService {
@@ -33,15 +35,18 @@ public class CarParkService {
 
 	private CarParkAdressVacancyRepository carParkAdressVacancyRepository;
 
+	private RoleRepository roleRepository;
+	
 	private PasswordEncoder bcrypt;
 
 	@Autowired
 	public CarParkService(CarParkRepository carParkRepository, CarParkAdressRepository carParkAdressRepository,
-			CarParkAdressVacancyRepository carParkAdressVacancyRepository, PasswordEncoder bcrypt) {
+			CarParkAdressVacancyRepository carParkAdressVacancyRepository, RoleRepository roleRepository, PasswordEncoder bcrypt) {
 		super();
 		this.carParkRepository = carParkRepository;
 		this.carParkAdressRepository = carParkAdressRepository;
 		this.carParkAdressVacancyRepository = carParkAdressVacancyRepository;
+		this.roleRepository = roleRepository;
 		this.bcrypt = bcrypt;
 	}
 
@@ -56,6 +61,7 @@ public class CarParkService {
 		if (isCnpjRegistered(carPark.getCnpj()) || isEmailAlreadyRegistered(carPark.getEmail()))
 			throw new UserAlreadyExistsException("Estabelecimento já cadastrado.");
 		encodePassword(carPark);
+		carPark.getRoles().add(findRoleByName("CARPARK"));
 		return carParkRepository.save(carPark);
 	}
 
@@ -159,6 +165,13 @@ public class CarParkService {
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID invalido.");
 	}
 
+	private Role findRoleByName(String name) {
+		Optional<Role> role = roleRepository.findByName(name);
+		if(role.isPresent())
+			return role.get();
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role invalida.");
+	}
+	
 	private void checkIfAdressIsFromCarParkIfNotThrowsException(Adress adress, Long carParkId) {
 		Long ownerOfAdressVacancy = adress.getCarPark().getId();
 		if (ownerOfAdressVacancy != carParkId)

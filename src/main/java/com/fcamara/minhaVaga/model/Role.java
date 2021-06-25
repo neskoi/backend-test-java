@@ -8,9 +8,11 @@ import javax.persistence.Id;
 import org.springframework.security.core.GrantedAuthority;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@NoArgsConstructor
 public class Role implements GrantedAuthority{
 
 	private static final long serialVersionUID = -5848560722079935409L;
@@ -19,6 +21,10 @@ public class Role implements GrantedAuthority{
 	private Long id;
 	
 	private String name;
+
+	public Role(String name) {
+		this.name = name;
+	}
 
 	@Override
 	public String getAuthority() {		

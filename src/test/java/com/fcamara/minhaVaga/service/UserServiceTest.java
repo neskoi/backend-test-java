@@ -19,7 +19,9 @@ import org.springframework.web.server.ResponseStatusException;
 import com.fcamara.minhaVaga.dto.request.UserDtoUpdateEmailRequest;
 import com.fcamara.minhaVaga.dto.request.UserDtoUpdatePasswordRequest;
 import com.fcamara.minhaVaga.exception.UserAlreadyExistsException;
+import com.fcamara.minhaVaga.model.Role;
 import com.fcamara.minhaVaga.model.User;
+import com.fcamara.minhaVaga.repository.RoleRepository;
 import com.fcamara.minhaVaga.repository.UserRepository;
 
 public class UserServiceTest {
@@ -28,15 +30,18 @@ public class UserServiceTest {
 	private UserRepository userRepository;
 
 	@Mock
+	private RoleRepository roleRepository;
+	
+	@Mock
 	private PasswordEncoder bcrypt;
-
+	
 	private UserService userService;
 
 	@BeforeEach
 	public void BeforeEach() {
 		MockitoAnnotations.openMocks(this);
 		this.bcrypt = new BCryptPasswordEncoder();
-		this.userService = new UserService(userRepository, bcrypt);
+		this.userService = new UserService(userRepository, roleRepository, bcrypt);
 	}
 
 	@Test
@@ -65,6 +70,15 @@ public class UserServiceTest {
 	public void shouldThrowsExceptionIfEmailIsAlreadyInUse() {
 		User user = new User("Robissu", "123456789", "71418894001", "pedro@com.com");
 		Mockito.when(userRepository.findByEmail(anyString())).thenReturn(repoUserFindByEmailMockBehavior(user.getEmail()));
+		Assertions.assertThrows(UserAlreadyExistsException.class, () -> userService.register(user));
+	}
+	
+	@Test
+	public void shouldSaveAndReturnSavedUser() {
+		User user = new User("Robissu", "123456789", "71418894001", "robissu@com.com");
+		Mockito.when(userRepository.findByCpf(anyString())).thenReturn(repoUserFindByCpfMockBehavior(user.getCpf()));
+		Mockito.when(userRepository.findByEmail(anyString())).thenReturn(repoUserFindByEmailMockBehavior(user.getEmail()));
+		Mockito.when(roleRepository.findByName(any())).thenReturn(repoRoleFindByNameMockBehavior("CAROWNER"));
 		Assertions.assertThrows(UserAlreadyExistsException.class, () -> userService.register(user));
 	}
 
@@ -121,6 +135,16 @@ public class UserServiceTest {
 		return Optional.empty();
 	}
 
+	private Optional<Role> repoRoleFindByNameMockBehavior(String name){
+		List<Role> roles = fakeRolesDB();
+		
+		for(Role r : roles) {
+			if(r.getName() == name)
+				return Optional.of(r);
+		}
+		return Optional.empty();
+	}
+	
 	private List<User> fakeUserDB() {
 		List<User> users = new ArrayList<>();
 
@@ -133,5 +157,12 @@ public class UserServiceTest {
 		users.add(user2);
 
 		return users;
+	}
+
+	private List<Role> fakeRolesDB(){
+		List<Role> roles = new ArrayList<>();
+		roles.add(new Role("CARPARK"));
+		roles.add(new Role("CAROWNER"));
+		return roles;
 	}
 }
