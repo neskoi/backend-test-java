@@ -125,11 +125,11 @@ public class UserServiceTest {
 		List<User> users = new ArrayList<>();
 
 		User user1 = new User("Pedro", "123456789", "73710854008", "pedro@com.com");
-		user1.setId(1);
+		user1.setId(1l);
 		users.add(user1);
 
 		User user2 = new User("Maria", "123456789", "07450740060", "pedro@com.com");
-		user2.setId(2);
+		user2.setId(2l);
 		users.add(user2);
 
 		return users;

@@ -251,10 +251,10 @@ public class CarParkUsageServiceTest {
 		Model mod2 = new Model("Lego-52", null, TypeOfVehicle.CARRO);
 
 		User user1 = new User();
-		user1.setId(1);
+		user1.setId(1l);
 
 		User user2 = new User();
-		user2.setId(2);
+		user2.setId(2l);
 
 		Vehicle vehi1 = new Vehicle(user1, mod1, null, "AAA0123");
 		vehi1.setId(1l);

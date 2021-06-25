@@ -169,10 +169,10 @@ public class CarParkServiceTest {
 		List<CarPark> carParks = new ArrayList<>();
 		CarPark cp1 = new CarPark("Estacionamento 01", "123456789", "31477931000109", "estacionameto01@com.com",
 				"40028922");
-		cp1.setId(1);
+		cp1.setId(1l);
 		CarPark cp2 = new CarPark("Estacionamento 02", "123456789", "57498821000117", "estacionameto02@com.com",
 				"40028923");
-		cp2.setId(2);
+		cp2.setId(2l);
 		carParks.add(cp1);
 		carParks.add(cp2);
 		return carParks;

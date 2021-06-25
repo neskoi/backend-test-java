@@ -99,39 +99,27 @@ public class CarParkService {
 	}
 
 	@Transactional
-	public CarPark updateEmail(Long id, @Valid CarParkDtoEmailRequest carParkRequest) {
-		Optional<CarPark> searchedCarPark = carParkRepository.findById(id);
-		if (searchedCarPark.isPresent()) {
-			CarPark carPark = searchedCarPark.get();
-			if (isEmailAlreadyRegistered(carParkRequest.getEmail()))
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email indisponivel");
-			carPark.setEmail(carParkRequest.getEmail());
-			return carPark;
-		}
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID invalido.");
+	public CarPark updateEmail(Long carParkId, @Valid CarParkDtoEmailRequest carParkRequest) {
+		CarPark carPark = findOneCarPark(carParkId);
+		if (isEmailAlreadyRegistered(carParkRequest.getEmail()))
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email indisponivel");
+		carPark.setEmail(carParkRequest.getEmail());
+		return carPark;
 	}
 
 	@Transactional
-	public CarPark updatePassword(Long id, @Valid CarParkDtoPasswordRequest carParkRequest) {
-		Optional<CarPark> searchedCarPark = carParkRepository.findById(id);
-		if (searchedCarPark.isPresent()) {
-			CarPark carPark = searchedCarPark.get();
-			carPark.setPassword(carParkRequest.getPassword());
-			encodePassword(carPark);
-			return carPark;
-		}
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID invalido.");
+	public CarPark updatePassword(Long carParkId, @Valid CarParkDtoPasswordRequest carParkRequest) {
+		CarPark carPark = findCarPark(carParkId);
+		carPark.setPassword(carParkRequest.getPassword());
+		encodePassword(carPark);
+		return carPark;
 	}
 
 	@Transactional
-	public CarPark updatePhone(Long id, @Valid CarParkDtoPhoneRequest carParkRequest) {
-		Optional<CarPark> searchedCarPark = carParkRepository.findById(id);
-		if (searchedCarPark.isPresent()) {
-			CarPark carPark = searchedCarPark.get();
-			carPark.setPhone(carParkRequest.getPhone());
-			return carPark;
-		}
-		return null;
+	public CarPark updatePhone(Long carParkId, @Valid CarParkDtoPhoneRequest carParkRequest) {
+		CarPark carPark = findCarPark(carParkId);
+		carPark.setPhone(carParkRequest.getPhone());
+		return carPark;
 	}
 
 	public void deleteAdress(Long carParkId, Long adressId) {
@@ -141,7 +129,7 @@ public class CarParkService {
 			Long ownerOfAdress = adressToDelete.getCarPark().getId();
 			if (ownerOfAdress == carParkId) {
 				carParkAdressRepository.delete(adressToDelete);
-				return;				
+				return;
 			}
 		}
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID invalido.");
@@ -157,6 +145,13 @@ public class CarParkService {
 				return;
 			}
 		}
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID invalido.");
+	}
+
+	private CarPark findCarPark(Long carparkId) {
+		Optional<CarPark> searchedCarPark = carParkRepository.findById(carparkId);
+		if (searchedCarPark.isPresent())
+			return searchedCarPark.get();
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID invalido.");
 	}
 

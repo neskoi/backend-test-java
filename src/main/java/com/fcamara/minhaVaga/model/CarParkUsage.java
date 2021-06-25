@@ -28,7 +28,7 @@ public class CarParkUsage {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	private Vehicle vehicle;

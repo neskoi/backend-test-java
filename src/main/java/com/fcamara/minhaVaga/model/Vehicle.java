@@ -23,7 +23,7 @@ public class Vehicle {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 
 	@Getter(value=AccessLevel.NONE)
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
