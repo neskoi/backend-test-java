@@ -52,6 +52,7 @@ public class SecurityConfigs extends WebSecurityConfigurerAdapter {
 				.authorizeRequests()
 				.antMatchers(HttpMethod.POST, "/user/auth").permitAll()
 				.antMatchers(HttpMethod.POST, "/user/register").permitAll()
+				.antMatchers(HttpMethod.GET, "/user/vehicle/all/**").permitAll()
 				.anyRequest().hasAuthority("CAROWNER")
 				.and().csrf().disable()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

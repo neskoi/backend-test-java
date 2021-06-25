@@ -2,6 +2,8 @@ package com.fcamara.minhaVaga.dto.response;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 import com.fcamara.minhaVaga.model.Adress;
 import com.fcamara.minhaVaga.model.CarPark;
 
@@ -26,4 +28,8 @@ public class CarParkDtoResponse {
 		this.adress = carPark.getAdress();
 	}
 
+	public static Page<CarParkDtoResponse> bulkConvertToDtoResponse(Page<CarPark> carParkUsages){
+		return carParkUsages.map(CarParkDtoResponse::new);
+	}
+	
 }

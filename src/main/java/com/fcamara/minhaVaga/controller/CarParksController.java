@@ -2,10 +2,14 @@ package com.fcamara.minhaVaga.controller;
 
 import java.net.URI;
 
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,6 +53,14 @@ public class CarParksController {
 		return ResponseEntity.ok(new CarParkDtoResponse(carPark));
 	}
 
+	@GetMapping("/all")
+	@Operation(summary = "Retorna todas as informação de todos os estacionamentos.")
+	public ResponseEntity<Page<CarParkDtoResponse>> listAllCarParks(@PageableDefault(page = 0, size = 50) Pageable pageable) {
+		
+		Page<CarPark> searchedCarParks = carParkService.listAllCarParks(pageable);
+		return ResponseEntity.ok(CarParkDtoResponse.bulkConvertToDtoResponse(searchedCarParks));
+	}	
+	
 	@PostMapping("/register")
 	@Operation(summary = "Registra um estacionamento.")
 	public ResponseEntity<CarParkDtoResponse> registerCarPark(@Valid @RequestBody CarParkDtoRequest carParkRequest,

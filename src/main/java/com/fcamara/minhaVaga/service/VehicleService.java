@@ -6,6 +6,8 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -52,6 +54,14 @@ public class VehicleService {
 		return searchedVehicle.get();
 	}
 
+	public Page<Color> listAllColors(Pageable pageable) {
+		return colorRepository.findAll(pageable);
+	}
+	
+	public Page<Model> listAllModels(Pageable pageable) {
+		return modelRepository.findAll(pageable);
+	}
+	
 	public Vehicle registerVehicle(Long userId, @Valid VehicleDtoRequest vehicleRequest) {
 		
 		IfFindVehicleByPlateThrowsException(vehicleRequest.getPlate());
@@ -66,7 +76,6 @@ public class VehicleService {
 		return vehicleRepository.save(vehicleToRegister);
 
 	}
-	
 
 	@Transactional
 	public Vehicle changeVehicleColor(Long userId, Long vehicleId, Long colorId) {
@@ -114,4 +123,7 @@ public class VehicleService {
 			throw new ModelIdInvalidException("Modelo invalido.");
 		return searchedModel.get();
 	}
+
+	
+	
 }

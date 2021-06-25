@@ -6,6 +6,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +26,8 @@ import com.fcamara.minhaVaga.dto.request.UserDtoUpdateEmailRequest;
 import com.fcamara.minhaVaga.dto.request.UserDtoUpdatePasswordRequest;
 import com.fcamara.minhaVaga.dto.request.VehicleDtoRequest;
 import com.fcamara.minhaVaga.dto.response.UserDtoResponse;
+import com.fcamara.minhaVaga.model.Color;
+import com.fcamara.minhaVaga.model.Model;
 import com.fcamara.minhaVaga.model.User;
 import com.fcamara.minhaVaga.model.Vehicle;
 import com.fcamara.minhaVaga.service.UserService;
@@ -45,12 +50,24 @@ public class UsersController {
 
 	@GetMapping("/info")
 	@Operation(summary = "Retorna informação do usuário autenticado")
-
 	public ResponseEntity<UserDtoResponse> findOneUser(HttpServletRequest request) {
 		Long userId = tokenService.returnRequesterId(request);
 		User user = userService.findOneUser(userId);
 		return ResponseEntity.ok(new UserDtoResponse(user));
 	};
+	
+	@GetMapping("/vehicle/all/colors")
+	@Operation(summary = "Lista todos os cores possivei para veiculos")
+	public ResponseEntity<Page<Color>> listAllColors(@PageableDefault(page = 0, size = 50) Pageable pageable){
+		return ResponseEntity.ok(vehicleService.listAllColors(pageable));
+	}
+	
+	@GetMapping("/vehicle/all/models")
+	@Operation(summary = "Lista todos os modelos possivei para veiculos")
+	public ResponseEntity<Page<Model>> listAllModels(@PageableDefault(page = 0, size = 50) Pageable pageable){
+		return ResponseEntity.ok(vehicleService.listAllModels(pageable));
+	}
+	
 	
 	@PostMapping("/register")
 	@Operation(summary = "Registra um usuário")

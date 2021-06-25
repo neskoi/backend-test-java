@@ -6,6 +6,8 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -57,6 +59,10 @@ public class CarParkService {
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID invalido.");
 	}
 
+	public Page<CarPark> listAllCarParks(Pageable pageable) {
+		return carParkRepository.findAll(pageable);
+	}
+	
 	public CarPark register(CarPark carPark) {
 		if (isCnpjRegistered(carPark.getCnpj()) || isEmailAlreadyRegistered(carPark.getEmail()))
 			throw new UserAlreadyExistsException("Estabelecimento já cadastrado.");
@@ -208,5 +214,7 @@ public class CarParkService {
 		}
 		return false;
 	}
+
+	
 
 }
