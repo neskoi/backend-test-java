@@ -87,7 +87,7 @@ public class UserService {
 
 	private boolean isCpfAlreadyRegistered(String cpf) {
 		Optional<User> cpfRegistered = userRepository.findByCpf(cpf);
-		if (cpfRegistered != null)
+		if (cpfRegistered.isPresent())
 			return true;
 		return false;
 	}

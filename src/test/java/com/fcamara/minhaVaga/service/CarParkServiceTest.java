@@ -21,6 +21,7 @@ import com.fcamara.minhaVaga.model.Role;
 import com.fcamara.minhaVaga.repository.CarParkAdressRepository;
 import com.fcamara.minhaVaga.repository.CarParkAdressVacancyRepository;
 import com.fcamara.minhaVaga.repository.CarParkRepository;
+import com.fcamara.minhaVaga.repository.CarParkUsageRepository;
 import com.fcamara.minhaVaga.repository.RoleRepository;
 import com.fcamara.minhaVaga.dto.request.CarParkDtoEmailRequest;
 import com.fcamara.minhaVaga.dto.request.CarParkDtoPasswordRequest;
@@ -39,6 +40,9 @@ public class CarParkServiceTest {
 	private CarParkAdressVacancyRepository carParkAdressVacancyRepository;
 	
 	@Mock
+	private CarParkUsageRepository carParkUsageRepostitory;
+	
+	@Mock
 	private RoleRepository roleRepository;
 
 
@@ -52,7 +56,7 @@ public class CarParkServiceTest {
 		MockitoAnnotations.openMocks(this);
 		this.bcrypt = new BCryptPasswordEncoder();
 		this.carParkService = new CarParkService(carParkRepository, carParkAdressRepository,
-				carParkAdressVacancyRepository, roleRepository, bcrypt);
+				carParkAdressVacancyRepository, carParkUsageRepostitory, roleRepository, bcrypt);
 	}
 
 	@Test

@@ -3,6 +3,7 @@ package com.fcamara.minhaVaga.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -47,7 +48,7 @@ public class User implements UserDetails {
 	private String email;
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private List<Vehicle> vehicle;
+	private List<Vehicle> vehicle = new ArrayList<>();
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SUBSELECT)
@@ -60,6 +61,10 @@ public class User implements UserDetails {
 		this.email = email;
 	}
 
+	public List<Vehicle> getVehicle(){
+		return this.vehicle.stream().filter(vehicle -> vehicle.getIsActive()).collect(Collectors.toList());
+	}
+	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return null;

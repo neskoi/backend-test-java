@@ -1,5 +1,6 @@
 package com.fcamara.minhaVaga.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -21,11 +22,13 @@ import com.fcamara.minhaVaga.dto.request.VacancyDtoRequest;
 import com.fcamara.minhaVaga.exception.UserAlreadyExistsException;
 import com.fcamara.minhaVaga.model.Adress;
 import com.fcamara.minhaVaga.model.CarPark;
+import com.fcamara.minhaVaga.model.CarParkUsage;
 import com.fcamara.minhaVaga.model.Role;
 import com.fcamara.minhaVaga.model.Vacancy;
 import com.fcamara.minhaVaga.repository.CarParkAdressRepository;
 import com.fcamara.minhaVaga.repository.CarParkAdressVacancyRepository;
 import com.fcamara.minhaVaga.repository.CarParkRepository;
+import com.fcamara.minhaVaga.repository.CarParkUsageRepository;
 import com.fcamara.minhaVaga.repository.RoleRepository;
 
 @Service
@@ -37,17 +40,21 @@ public class CarParkService {
 
 	private CarParkAdressVacancyRepository carParkAdressVacancyRepository;
 
+	private CarParkUsageRepository carParkUsageRepostitory;
+
 	private RoleRepository roleRepository;
-	
+
 	private PasswordEncoder bcrypt;
 
 	@Autowired
 	public CarParkService(CarParkRepository carParkRepository, CarParkAdressRepository carParkAdressRepository,
-			CarParkAdressVacancyRepository carParkAdressVacancyRepository, RoleRepository roleRepository, PasswordEncoder bcrypt) {
+			CarParkAdressVacancyRepository carParkAdressVacancyRepository,
+			CarParkUsageRepository carParkUsageRepostitory, RoleRepository roleRepository, PasswordEncoder bcrypt) {
 		super();
 		this.carParkRepository = carParkRepository;
 		this.carParkAdressRepository = carParkAdressRepository;
 		this.carParkAdressVacancyRepository = carParkAdressVacancyRepository;
+		this.carParkUsageRepostitory = carParkUsageRepostitory;
 		this.roleRepository = roleRepository;
 		this.bcrypt = bcrypt;
 	}
@@ -62,7 +69,7 @@ public class CarParkService {
 	public Page<CarPark> listAllCarParks(Pageable pageable) {
 		return carParkRepository.findAll(pageable);
 	}
-	
+
 	public CarPark register(CarPark carPark) {
 		if (isCnpjRegistered(carPark.getCnpj()) || isEmailAlreadyRegistered(carPark.getEmail()))
 			throw new UserAlreadyExistsException("Estabelecimento já cadastrado.");
@@ -75,19 +82,21 @@ public class CarParkService {
 	public CarPark registerAdress(Long id, CarParkAdressDtoRequest carParkAdressRequest) {
 		CarPark carPark = findOneCarPark(id);
 		Adress carParkAdressToRegister = carParkAdressRequest.convertToAdress(carPark);
-		carPark.getAdress().add(carParkAdressToRegister);
+		List<Adress> adresses = carPark.getAdress();
+		adresses.add(carParkAdressToRegister);
+		carPark.setAdress(adresses);
 		return carPark;
 	}
 
 	@Transactional
 	public Adress registerAdressVacancy(Long carParkId, Long adressId, VacancyDtoRequest vacancyRequest) {
 		Adress adress = findAdress(adressId);
-		Long ownerOfAdress = adress.getCarPark().getId();
-		if (ownerOfAdress != carParkId)
-			checkIfAdressIsFromCarParkIfNotThrowsException(adress, carParkId);
+		checkIfAdressIsFromCarParkIfNotThrowsException(adress, carParkId);
 		Vacancy vacancyInfo = vacancyRequest.convertToVacancy();
 		vacancyInfo.setAdress(adress);
-		adress.getVacancy().add(vacancyInfo);
+		List<Vacancy> vacancies = adress.getVacancy();
+		vacancies.add(vacancyInfo);
+		adress.setVacancy(vacancies);
 		return adress;
 	}
 
@@ -124,30 +133,43 @@ public class CarParkService {
 		return carPark;
 	}
 
+	@Transactional
 	public void deleteAdress(Long carParkId, Long adressId) {
-		Optional<Adress> searchedAdress = carParkAdressRepository.findById(adressId);
-		if (searchedAdress.isPresent()) {
-			Adress adressToDelete = searchedAdress.get();
-			Long ownerOfAdress = adressToDelete.getCarPark().getId();
-			if (ownerOfAdress == carParkId) {
-				carParkAdressRepository.delete(adressToDelete);
-				return;
-			}
+		Adress adress = findAdress(adressId);
+		checkIfAdressIsFromCarParkIfNoThrowsException(carParkId, adress);
+		for(Vacancy vacancy : adress.getVacancy()) {
+			checkIfVacancyIsAlreadyFreeIfNoThrowsException(vacancy.getId());
 		}
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID invalido.");
+		adress.setIsActive(false);
+		return;
 	}
 
+	@Transactional
 	public void deleteAdressVacancy(Long carParkId, Long vacancyId) {
-		Optional<Vacancy> searchedVacancy = carParkAdressVacancyRepository.findById(vacancyId);
-		if (searchedVacancy.isPresent()) {
-			Vacancy vacancyToDelete = searchedVacancy.get();
-			Long ownerOfAdressVacancy = vacancyToDelete.getAdress().getCarPark().getId();
-			if (ownerOfAdressVacancy == carParkId) {
-				carParkAdressVacancyRepository.deleteById(vacancyToDelete.getId());
-				return;
-			}
-		}
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID invalido.");
+		Vacancy vacancy = findVacancy(vacancyId);
+		checkIfVacancyIsFromCarParkIfNoThrowsException(carParkId, vacancy);
+		checkIfVacancyIsAlreadyFreeIfNoThrowsException(vacancyId);
+		vacancy.setIsActive(false);
+		return;
+	}
+
+	private void checkIfAdressIsFromCarParkIfNoThrowsException(Long carParkId, Adress adress) {
+		Long ownerOfAdress = adress.getCarPark().getId();
+		if (ownerOfAdress != carParkId) 
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id invalido");		
+	}
+		
+	private void checkIfVacancyIsFromCarParkIfNoThrowsException(Long carParkId, Vacancy vacancy) {
+		Long ownerOfAdressVacancy = vacancy.getAdress().getCarPark().getId();
+		if (ownerOfAdressVacancy != carParkId)
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id invalido");
+	}
+
+	private void checkIfVacancyIsAlreadyFreeIfNoThrowsException(Long vacancyId) {
+		Optional<CarParkUsage> vacancyUsage = carParkUsageRepostitory.findByVacancyIdAndExitTimeIsNull(vacancyId);
+		if (vacancyUsage.isPresent())
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"Ainda existem veiculos estacionados neste endereço");
 	}
 
 	private CarPark findCarPark(Long carparkId) {
@@ -173,11 +195,11 @@ public class CarParkService {
 
 	private Role findRoleByName(String name) {
 		Optional<Role> role = roleRepository.findByName(name);
-		if(role.isPresent())
+		if (role.isPresent())
 			return role.get();
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role invalida.");
 	}
-	
+
 	private void checkIfAdressIsFromCarParkIfNotThrowsException(Adress adress, Long carParkId) {
 		Long ownerOfAdressVacancy = adress.getCarPark().getId();
 		if (ownerOfAdressVacancy != carParkId)
@@ -214,7 +236,5 @@ public class CarParkService {
 		}
 		return false;
 	}
-
-	
 
 }

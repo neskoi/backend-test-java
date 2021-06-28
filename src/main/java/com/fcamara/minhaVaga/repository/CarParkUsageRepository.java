@@ -28,7 +28,7 @@ public interface CarParkUsageRepository extends JpaRepository<CarParkUsage, Long
 			+ " WHERE adress.car_park_id = ?1 AND car_park_usage.exit_time > ?2 AND car_park_usage.exit_time < ?3 " 
 			+ " ORDER BY car_park_usage.entrance_time DESC";
 	
-	public List<CarParkUsage> findByVacancyIdAndExitTimeIsNull(Long id);
+	public Optional<CarParkUsage> findByVacancyIdAndExitTimeIsNull(Long id);
 
 	public Long countByVacancyIdAndExitTimeIsNull(Long id);
 	

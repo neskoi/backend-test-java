@@ -1,6 +1,8 @@
 package com.fcamara.minhaVaga.model;
 
 import java.math.BigDecimal;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -12,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,13 +36,21 @@ public class Vacancy {
 	@Enumerated(EnumType.STRING)
 	private TypeOfVehicle typeOfVehicle;
 
+	@Column(nullable = false)
 	private int amount;
 
+	@Column(nullable = false)
 	private BigDecimal hourPrice;
 
+	@Column(nullable = false)
 	private BigDecimal dayPrice;
 
+	@Column(nullable = false)
 	private BigDecimal monthPrice;
+	
+	@JsonIgnore
+	@Column(columnDefinition = "boolean default true")
+	private boolean isActive = true;
 
 	public Vacancy(Adress adress, TypeOfVehicle typeOfVehicle, int amount, BigDecimal hourPrice, BigDecimal dayPrice,
 			BigDecimal monthPrice) {
@@ -74,5 +85,13 @@ public class Vacancy {
 		default:
 			throw null;
 		}
+	}
+
+	public boolean getIsActive() {
+		return this.isActive;
+	}
+	
+	public void setIsActive(boolean isActive) {
+		this.isActive = isActive;
 	}
 }

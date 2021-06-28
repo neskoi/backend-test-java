@@ -26,6 +26,7 @@ import com.fcamara.minhaVaga.model.Model;
 import com.fcamara.minhaVaga.model.TypeOfVehicle;
 import com.fcamara.minhaVaga.model.User;
 import com.fcamara.minhaVaga.model.Vehicle;
+import com.fcamara.minhaVaga.repository.CarParkUsageRepository;
 import com.fcamara.minhaVaga.repository.ColorRepository;
 import com.fcamara.minhaVaga.repository.ModelRepository;
 import com.fcamara.minhaVaga.repository.UserRepository;
@@ -45,13 +46,16 @@ public class VehicleServiceTest {
 	@Mock
 	private ModelRepository modelRepository;
 	
+	@Mock
+	private CarParkUsageRepository carParkUsageRepository;
+	
 	private VehicleService vehicleService;
 	
 
 	@BeforeEach
 	public void BeforeEach() {
 		MockitoAnnotations.openMocks(this);
-		this.vehicleService = new VehicleService(userRepository, vehicleRepository, colorRepository, modelRepository);
+		this.vehicleService = new VehicleService(userRepository, vehicleRepository, colorRepository, modelRepository, carParkUsageRepository);
 	}
 
 	@Test

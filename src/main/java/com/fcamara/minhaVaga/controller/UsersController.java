@@ -68,7 +68,6 @@ public class UsersController {
 		return ResponseEntity.ok(vehicleService.listAllModels(pageable));
 	}
 	
-	
 	@PostMapping("/register")
 	@Operation(summary = "Registra um usuário")
 	public ResponseEntity<UserDtoResponse> register(@Valid @RequestBody UserDtoRequest userRequest,

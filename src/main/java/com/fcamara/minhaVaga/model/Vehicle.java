@@ -41,11 +41,23 @@ public class Vehicle {
 
 	@Column(nullable = false, unique = true)
 	private String plate;
+	
+	@JsonIgnore
+	@Column(columnDefinition = "boolean default true")
+	private boolean isActive = true;
 
 	public Vehicle(User user, Model model, Color color, String plate) {
 		this.user = user;
 		this.model = model;
 		this.color = color;
 		this.plate = plate;
+	}
+	
+	public boolean getIsActive() {
+		return this.isActive;
+	}
+	
+	public void setIsActive(boolean isActive) {
+		this.isActive = isActive;
 	}
 }

@@ -3,6 +3,8 @@ package com.fcamara.minhaVaga.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -48,7 +50,7 @@ public class CarPark implements UserDetails{
 
 	@JsonManagedReference
 	@OneToMany(mappedBy = "carPark", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private List<Adress> adress;
+	private List<Adress> adress = new ArrayList<>();
 
 	@Column(nullable = false)
 	private String phone;
@@ -65,6 +67,10 @@ public class CarPark implements UserDetails{
 		this.phone = phone;
 	}
 
+	public List<Adress> getAdress(){
+		return this.adress.stream().filter(adress -> adress.getIsActive()).collect(Collectors.toList());
+	}
+	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return this.roles;

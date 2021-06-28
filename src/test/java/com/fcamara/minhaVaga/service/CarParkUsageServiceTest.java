@@ -120,8 +120,8 @@ public class CarParkUsageServiceTest {
 		Mockito.when(carParkAdressVacancyRepository.findById(searchedVacancy))
 				.thenReturn(repoCarParkUsageFindVacancyByIdMockBehavior(searchedVacancy));
 
-		Mockito.when(carParkUsageRepository.findByVacancyIdAndExitTimeIsNull(searchedVacancy))
-				.thenReturn(repoCarParkUsageFindByVacancyAndExitTimeIsNullListMockBehavior(searchedVacancy));
+		Mockito.when(carParkUsageRepository.countByVacancyIdAndExitTimeIsNull(searchedVacancy))
+				.thenReturn(repoCarParkUsagecountByVacancyIdAndExitTimeIsNullMockBehavior(searchedVacancy));
 
 		Mockito.when(carParkUsageRepository.save(any(CarParkUsage.class)))
 				.thenReturn(repoCarParkUsageSaveMockBehavior());
@@ -180,12 +180,12 @@ public class CarParkUsageServiceTest {
 		return Optional.empty();
 	}
 
-	private List<CarParkUsage> repoCarParkUsageFindByVacancyAndExitTimeIsNullListMockBehavior(Long vehicleId) {
+	private Long repoCarParkUsagecountByVacancyIdAndExitTimeIsNullMockBehavior(Long vehicleId) {
 		List<CarParkUsage> fakeDB = fakeUsageDB();
-		List<CarParkUsage> count = new ArrayList<>();
+		Long count = 0l;
 		for (CarParkUsage cpu : fakeDB) {
 			if (cpu.getVehicle().getId() == vehicleId && cpu.getExitTime() == null)
-				count.add(cpu);
+				count++;
 		}
 		return count;
 	}
