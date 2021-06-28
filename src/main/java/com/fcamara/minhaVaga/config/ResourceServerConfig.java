@@ -7,12 +7,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 
 @Configuration
 @Order(3)
-public class ResourceServerConfig extends WebSecurityConfigurerAdapter  {
+public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
-    public void configure(WebSecurity web)  {
-        web.ignoring().antMatchers("/v3/api-docs",
-                "/swagger-ui.html",
-                "/swagger-ui/**");
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/swagger-ui");
     }
+
 }
